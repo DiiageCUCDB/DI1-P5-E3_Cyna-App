@@ -4,75 +4,79 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
+// ============================================================
+// Thème Cyna — mapping 1:1 avec Cyna-Web index.css
+// ============================================================
 
 private val LightColorScheme = lightColorScheme(
-    primary = Bluecyna,
-    onPrimary = White,
-    primaryContainer = Blue200,
-    onPrimaryContainer = Blue900,
+    background           = LightBackground,       // #F9FAFC
+    onBackground         = LightForeground,        // #05050B
 
-    secondary = Yellowcyna,
-    onSecondary = Neutral1000,
-    secondaryContainer = Yellow200,
-    onSecondaryContainer = Yellow900,
+    surface              = LightCard,              // #FFFFFF
+    onSurface            = LightForeground,
+    surfaceVariant       = LightMuted,             // #E9EBF1
+    onSurfaceVariant     = LightMutedFg,           // #60636C
 
-    tertiary = Skycyna,
-    onTertiary = Neutral1000,
-    tertiaryContainer = Sky200,
-    onTertiaryContainer = Sky900,
+    primary              = LightPrimary,           // #562BF5
+    onPrimary            = LightPrimaryFg,         // #F8F8FC
+    primaryContainer     = LightAccent,            // #E4E6F9
+    onPrimaryContainer   = LightAccentFg,          // #262067
 
-    background = Neutral0,
-    onBackground = Neutral1000,
+    secondary            = LightSecondary,         // #E9EBF2
+    onSecondary          = LightSecondaryFg,       // #13151F
+    secondaryContainer   = LightMuted,
+    onSecondaryContainer = LightSecondaryFg,
 
-    surface = Neutral100,
-    onSurface = Neutral1000,
+    tertiary             = LightAccent,            // #E4E6F9
+    onTertiary           = LightAccentFg,          // #262067
+    tertiaryContainer    = LightAccent,
+    onTertiaryContainer  = LightPrimary,
 
-    surfaceVariant = Neutral400,
-    onSurfaceVariant = Neutral800, // Lighter gray for light theme
+    outline              = LightBorder,            // #D5D7E0
+    outlineVariant       = LightBorder,
 
-    outline = Neutral400,
-    outlineVariant = Neutral300,
+    error                = LightDestructive,       // #DF202E
+    onError              = White,
+    errorContainer       = LightAccent,
+    onErrorContainer     = LightDestructive,
 
-    error = Color(0xFFBA1A1A),
-    onError = White,
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002)
+    surfaceTint          = LightPrimary,
 )
 
 val DarkColorScheme = darkColorScheme(
-    primary = Bluecyna,
-    onPrimary = Neutral100,
-    primaryContainer = Blue800,
-    onPrimaryContainer = Blue200,
+    background           = DarkBackground,         // #020205
+    onBackground         = DarkForeground,         // #F1F1F6
 
-    secondary = Yellowcyna,
-    onSecondary = Neutral1000,
-    secondaryContainer = Yellow800,
-    onSecondaryContainer = Yellow200,
+    surface              = DarkCard,               // #08080F
+    onSurface            = DarkForeground,
+    surfaceVariant       = DarkMuted,              // #101119
+    onSurfaceVariant     = DarkMutedFg,            // #787A83
 
-    tertiary = Skycyna,
-    onTertiary = Neutral1000,
-    tertiaryContainer = Sky800,
-    onTertiaryContainer = Sky200,
+    primary              = DarkPrimary,            // #6D55FF
+    onPrimary            = DarkPrimaryFg,          // #F8F8FC
+    primaryContainer     = DarkAccent,             // #17182D
+    onPrimaryContainer   = DarkAccentFg,           // #CBCDD8
 
-    background = Color(0xFF121212),
-    onBackground = Neutral100,
+    secondary            = DarkSecondary,          // #101119
+    onSecondary          = DarkSecondaryFg,        // #DDDDE3
+    secondaryContainer   = DarkMuted,
+    onSecondaryContainer = DarkSecondaryFg,
 
-    surface = Neutral900,
-    onSurface = Neutral100,
+    tertiary             = DarkAccent,             // #17182D
+    onTertiary           = DarkAccentFg,           // #CBCDD8
+    tertiaryContainer    = DarkAccent,
+    onTertiaryContainer  = DarkForeground,
 
-    surfaceVariant = Neutral800,
-    onSurfaceVariant = Neutral400, // Lighter gray for dark theme
+    outline              = DarkBorder,             // #1AFFFFFF (blanc 10%)
+    outlineVariant       = DarkInput,              // #24FFFFFF (blanc 14%)
 
-    outline = Neutral700,
-    outlineVariant = Neutral800,
+    error                = DarkDestructive,        // #F94144
+    onError              = DarkBackground,
+    errorContainer       = DarkAccent,
+    onErrorContainer     = DarkDestructive,
 
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6)
+    surfaceTint          = DarkPrimary,
 )
 
 @Composable
@@ -81,14 +85,11 @@ fun AppTheme(
 ) {
     val useDarkTheme = ThemeManager.isDarkTheme()
 
-    val colorScheme = when {
-        useDarkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (useDarkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = EdusecTypography,
-        content = content
+        typography  = CynaTypography,
+        content     = content
     )
 }

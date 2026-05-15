@@ -6,8 +6,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Rename to avoid conflict - use "EdusecTypography"
-val EdusecTypography = Typography(
+// Rename to avoid conflict - use "CynaTypography"
+val CynaTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
