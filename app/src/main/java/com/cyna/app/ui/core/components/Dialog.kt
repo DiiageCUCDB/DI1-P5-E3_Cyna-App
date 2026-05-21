@@ -1,4 +1,4 @@
-package com.diiage.template.ui.core.components.ui
+package com.cyna.app.ui.core.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -53,7 +53,7 @@ fun ShadAlertDialog(
 ) {
     if (!open) return
 
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         shape            = RoundedCornerShape(12.dp),
         containerColor   = MaterialTheme.colorScheme.surface,
@@ -78,9 +78,9 @@ fun ShadAlertDialog(
         } else null,
         confirmButton = {
             Button(
-                onClick  = onConfirm,
-                variant  = if (isDestructive) ButtonVariant.Destructive else ButtonVariant.Default,
-                size     = ButtonSize.Sm
+                onClick = onConfirm,
+                variant = if (isDestructive) ButtonVariant.Destructive else ButtonVariant.Default,
+                size = ButtonSize.Sm
             ) {
                 Text(confirmLabel)
             }
@@ -89,7 +89,7 @@ fun ShadAlertDialog(
             Button(
                 onClick = onDismiss,
                 variant = ButtonVariant.Outline,
-                size    = ButtonSize.Sm
+                size = ButtonSize.Sm
             ) {
                 Text(cancelLabel)
             }

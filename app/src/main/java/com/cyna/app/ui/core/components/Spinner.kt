@@ -1,4 +1,4 @@
-package com.diiage.template.ui.core.components.ui
+package com.cyna.app.ui.core.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -16,16 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// ─────────────────────────────────────────────
-//  Spinner sizes
-// ─────────────────────────────────────────────
-
-enum class SpinnerSize {
-    Sm,      // 16dp
-    Default, // 24dp
-    Lg,      // 32dp
-    Xl       // 48dp
-}
+enum class SpinnerSize { Sm, Default, Lg, Xl }
 
 private fun SpinnerSize.toDp(): Dp = when (this) {
     SpinnerSize.Sm      -> 16.dp
@@ -41,35 +34,16 @@ private fun SpinnerSize.strokeWidth(): Dp = when (this) {
     SpinnerSize.Xl      -> 4.dp
 }
 
-// ─────────────────────────────────────────────
-//  Spinner
-// ─────────────────────────────────────────────
-
-/**
- * shadcn/ui-style Spinner.
- *
- * A smooth rotating arc — identical visual language to shadcn's lucide `Loader2`
- * icon spin animation.
- *
- * Usage:
- * ```
- * Spinner()
- * Spinner(size = SpinnerSize.Lg, color = MaterialTheme.colorScheme.primary)
- *
- * // With label
- * Spinner(label = "Loading…")
- * ```
- */
 @Composable
 fun Spinner(
     modifier: Modifier = Modifier,
-    size:     SpinnerSize = SpinnerSize.Default,
-    color:    Color       = MaterialTheme.colorScheme.primary,
-    trackColor: Color     = color.copy(alpha = 0.15f),
-    label:    String?     = null,
+    size: SpinnerSize = SpinnerSize.Default,
+    color: Color = MaterialTheme.colorScheme.primary,
+    trackColor: Color = color.copy(alpha = 0.15f),
+    label: String? = null,
 ) {
-    val dp          = size.toDp()
-    val strokeDp    = size.strokeWidth()
+    val dp       = size.toDp()
+    val strokeDp = size.strokeWidth()
 
     val infiniteTransition = rememberInfiniteTransition(label = "spinner")
     val angle by infiniteTransition.animateFloat(
@@ -83,40 +57,39 @@ fun Spinner(
     )
 
     Column(
-        modifier            = modifier,
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Canvas(modifier = Modifier.size(dp)) {
-            val stroke = Stroke(width = strokeDp.toPx(), cap = StrokeCap.Round)
-            val inset  = strokeDp.toPx() / 2f
-
-            // Track arc (full circle, muted)
-            drawArc(
-                color       = trackColor,
-                startAngle  = 0f,
-                sweepAngle  = 360f,
-                useCenter   = false,
-                style       = stroke,
-                topLeft     = androidx.compose.ui.geometry.Offset(inset, inset),
-                size        = androidx.compose.ui.geometry.Size(
-                    size.width  - strokeDp.toPx(),
-                    size.height - strokeDp.toPx()
-                )
+            val strokePx = strokeDp.toPx()
+            val stroke   = Stroke(width = strokePx, cap = StrokeCap.Round)
+            val inset    = strokePx / 2f
+            val arcSize  = Size(
+                width  = this.size.width  - strokePx,
+                height = this.size.height - strokePx
             )
+            val topLeft  = Offset(inset, inset)
 
-            // Spinning arc
+            // Track (full circle)
+            drawArc(
+                color      = trackColor,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter  = false,
+                style      = stroke,
+                topLeft    = topLeft,
+                size       = arcSize
+            )
+            // Spinning arc (~quarter circle)
             drawArc(
                 color      = color,
                 startAngle = angle,
-                sweepAngle = 80f,       // ~quarter circle — matches shadcn
+                sweepAngle = 80f,
                 useCenter  = false,
                 style      = stroke,
-                topLeft    = androidx.compose.ui.geometry.Offset(inset, inset),
-                size       = androidx.compose.ui.geometry.Size(
-                    size.width  - strokeDp.toPx(),
-                    size.height - strokeDp.toPx()
-                )
+                topLeft    = topLeft,
+                size       = arcSize
             )
         }
 
@@ -132,23 +105,11 @@ fun Spinner(
     }
 }
 
-// ─────────────────────────────────────────────
-//  Full-screen loading overlay
-// ─────────────────────────────────────────────
-
-/**
- * Centered spinner that fills its parent container — useful as a screen-level
- * loading state.
- *
- * ```
- * if (isLoading) SpinnerOverlay()
- * ```
- */
 @Composable
 fun SpinnerOverlay(
-    modifier: Modifier    = Modifier.fillMaxSize(),
-    size:     SpinnerSize = SpinnerSize.Lg,
-    label:    String?     = null,
+    modifier: Modifier = Modifier.fillMaxSize(),
+    size: SpinnerSize = SpinnerSize.Lg,
+    label: String? = null,
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Spinner(size = size, label = label)

@@ -1,4 +1,4 @@
-package com.diiage.template.ui.core.components.ui
+package com.cyna.app.ui.core.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

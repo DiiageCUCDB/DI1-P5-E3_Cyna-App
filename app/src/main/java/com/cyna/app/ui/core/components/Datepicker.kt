@@ -1,5 +1,6 @@
-package com.diiage.template.ui.core.components.ui
+package com.cyna.app.ui.core.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,7 +75,7 @@ fun DatePicker(
             shape        = RoundedCornerShape(6.dp),
             color        = Color.Transparent,
             contentColor = cs.onBackground,
-            border       = androidx.compose.foundation.BorderStroke(
+            border       = BorderStroke(
                 1.dp, if (expanded) cs.primary else cs.outline
             ),
             modifier     = Modifier.fillMaxWidth().height(36.dp)

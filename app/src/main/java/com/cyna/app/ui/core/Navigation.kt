@@ -12,9 +12,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.cyna.app.ui.screens.home.HomeScreen
-import com.cyna.app.ui.screens.login.LoginScreen
-import com.cyna.app.ui.screens.splash.SplashScreen
+import com.cyna.app.ui.screens.ComponentShowcaseScreen
 
 /**
  * Sealed class representing all possible destinations in the application.
@@ -135,8 +133,6 @@ fun NavHost(
         modifier = modifier
     ) {
         // Authentication Flow
-        composable(Destination.Splash) { SplashScreen(navController) }
-        composable(Destination.Home) { HomeScreen(navController) }
-        composable(Destination.Login) { LoginScreen(navController) }
+        composable(Destination.Splash) { ComponentShowcaseScreen() }
     }
 }

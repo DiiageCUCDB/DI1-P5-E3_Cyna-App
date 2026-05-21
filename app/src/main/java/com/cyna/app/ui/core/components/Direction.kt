@@ -1,63 +1,30 @@
-package com.diiage.template.ui.core.components.ui
+package com.cyna.app.ui.core.components
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-
-// ─────────────────────────────────────────────
-//  LayoutDirection enum alias
-// ─────────────────────────────────────────────
+import java.util.Locale
 
 /**
- * Mirrors shadcn/ui's `"ltr" | "rtl"` direction type.
- * Compose already has [LayoutDirection] — we re-use it directly.
- *
- * [LayoutDirection.Ltr] → left-to-right  (English, French, Spanish…)
- * [LayoutDirection.Rtl] → right-to-left  (Arabic, Hebrew, Persian…)
- */
-typealias TextDirection = LayoutDirection
-
-// ─────────────────────────────────────────────
-//  DirectionProvider
-// ─────────────────────────────────────────────
-
-/**
- * shadcn/ui-style `DirectionProvider`.
+ * shadcn/ui-style DirectionProvider.
  *
  * Wraps a subtree with the given [direction], overriding Compose's
- * [LocalLayoutDirection]. All standard Compose layouts (`Row`, `Column`,
- * `Scaffold`, `TextField` padding, icon positions, etc.) automatically
- * mirror when [LayoutDirection.Rtl] is active.
+ * [LocalLayoutDirection]. All standard layouts (Row, TextField padding,
+ * icon positions, etc.) automatically mirror when [LayoutDirection.Rtl] is active.
  *
- * Usage — app-level (in MainActivity / App.kt):
+ * Usage — app-level:
  * ```
- * @Composable
- * fun App() {
- *     val direction = if (isRtlLocale()) LayoutDirection.Rtl else LayoutDirection.Ltr
- *     AppTheme {
- *         DirectionProvider(direction = direction) {
- *             NavHost(rememberNavController())
- *         }
+ * AppTheme {
+ *     DirectionProvider(direction = DirectionManager.direction) {
+ *         NavHost(rememberNavController())
  *     }
  * }
  * ```
  *
- * Usage — screen/component level (e.g. to force RTL for a preview):
+ * Usage — screen/preview level:
  * ```
  * DirectionProvider(direction = LayoutDirection.Rtl) {
  *     LoginScreen(navController)
- * }
- * ```
- *
- * Usage — toggling at runtime:
- * ```
- * var dir by remember { mutableStateOf(DirectionManager.direction) }
- *
- * DirectionProvider(direction = dir) {
- *     Button(onClick = { DirectionManager.toggle(); dir = DirectionManager.direction }) {
- *         Text(if (dir == LayoutDirection.Rtl) "Switch to LTR" else "Switch to RTL")
- *     }
- *     MyContent()
  * }
  * ```
  */
@@ -72,58 +39,35 @@ fun DirectionProvider(
     )
 }
 
-// ─────────────────────────────────────────────
-//  useDirection  (hook equivalent)
-// ─────────────────────────────────────────────
-
 /**
- * Returns the current [LayoutDirection] from [LocalLayoutDirection].
- *
- * Mirrors shadcn/ui's `useDirection()` hook.
+ * Returns the current [LayoutDirection] — mirrors shadcn/ui's `useDirection()` hook.
  *
  * ```
- * @Composable
- * fun MyComponent() {
- *     val direction = useDirection()
- *     val isRtl = direction == LayoutDirection.Rtl
- *     Text(if (isRtl) "RTL active" else "LTR active")
- * }
+ * val direction = useDirection()
+ * val isRtl = direction == LayoutDirection.Rtl
  * ```
  */
 @Composable
 fun useDirection(): LayoutDirection = LocalLayoutDirection.current
 
-// ─────────────────────────────────────────────
-//  DirectionManager  (global singleton for runtime toggling)
-// ─────────────────────────────────────────────
-
 /**
- * Singleton that holds the current app-wide direction state.
+ * Global singleton for runtime LTR ↔ RTL toggling — mirrors shadcn/ui's DirectionManager.
  *
- * Similar to [ThemeManager], this lets you toggle LTR ↔ RTL from anywhere
- * in the app without threading a parameter down the composable tree.
- *
- * Setup — read the direction at root and pass it to [DirectionProvider]:
+ * Setup at root:
  * ```
- * @Composable
- * fun App() {
- *     AppTheme {
- *         DirectionProvider(direction = DirectionManager.direction) {
- *             NavHost(rememberNavController())
- *         }
+ * AppTheme {
+ *     DirectionProvider(direction = DirectionManager.direction) {
+ *         NavHost(rememberNavController())
  *     }
  * }
  * ```
  *
- * Toggle from any screen or settings page:
+ * Toggle from anywhere:
  * ```
- * Button(onClick = { DirectionManager.toggle() }) {
- *     Text("Toggle RTL / LTR")
- * }
+ * Button(onClick = { DirectionManager.toggle() }) { Text("Toggle RTL") }
  * ```
  */
 object DirectionManager {
-
     var direction by mutableStateOf<LayoutDirection>(LayoutDirection.Ltr)
         private set
 
@@ -133,12 +77,10 @@ object DirectionManager {
     }
 
     /** Explicitly set a direction. */
-    fun set(dir: LayoutDirection) {
-        direction = dir
-    }
+    fun set(dir: LayoutDirection) { direction = dir }
 
-    /** Set direction from a locale automatically. */
-    fun setFromLocale(locale: java.util.Locale) {
+    /** Auto-detect from locale. */
+    fun setFromLocale(locale: Locale = Locale.getDefault()) {
         direction = if (isRtlLocale(locale)) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
 
@@ -146,17 +88,12 @@ object DirectionManager {
     val isLtr: Boolean get() = direction == LayoutDirection.Ltr
 }
 
-// ─────────────────────────────────────────────
-//  Locale helper
-// ─────────────────────────────────────────────
-
 /**
- * Returns `true` if [locale] uses right-to-left script.
- *
- * Covers Arabic (ar), Hebrew (he / iw), Persian (fa), Urdu (ur),
- * Pashto (ps), Sindhi (sd), and Kurdish (ku) out of the box.
+ * Returns `true` if [locale] uses a right-to-left script.
+ * Covers Arabic (ar), Hebrew (he/iw), Persian (fa), Urdu (ur),
+ * Pashto (ps), Sindhi (sd), Kurdish (ku), Yiddish (yi), Dhivehi (dv).
  */
-fun isRtlLocale(locale: java.util.Locale = java.util.Locale.getDefault()): Boolean {
+fun isRtlLocale(locale: Locale = Locale.getDefault()): Boolean {
     val rtlLanguages = setOf("ar", "he", "iw", "fa", "ur", "ps", "sd", "ku", "yi", "dv")
     return locale.language.lowercase() in rtlLanguages
 }

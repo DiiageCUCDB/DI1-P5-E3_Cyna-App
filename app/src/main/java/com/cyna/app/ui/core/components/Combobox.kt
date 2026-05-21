@@ -1,5 +1,6 @@
-package com.diiage.template.ui.core.components.ui
+package com.cyna.app.ui.core.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -70,7 +72,7 @@ fun Combobox(
     placeholder: String   = "Select…",
     searchPlaceholder: String = "Search…",
     enabled: Boolean      = true,
-    maxDropdownHeight: androidx.compose.ui.unit.Dp = 240.dp,
+    maxDropdownHeight: Dp = 240.dp,
     emptyLabel: String    = "No results found."
 ) {
     val cs = MaterialTheme.colorScheme
@@ -92,7 +94,7 @@ fun Combobox(
             shape        = RoundedCornerShape(6.dp),
             color        = Color.Transparent,
             contentColor = cs.onBackground,
-            border       = androidx.compose.foundation.BorderStroke(
+            border       = BorderStroke(
                 1.dp,
                 if (expanded) cs.primary else cs.outline
             ),
