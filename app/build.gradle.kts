@@ -73,6 +73,10 @@ dependencies {
     // Kotlinx Serialization (for JSON)
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.kindling.core)
+    implementation(libs.kindling.utils)
+    implementation(libs.kindling.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

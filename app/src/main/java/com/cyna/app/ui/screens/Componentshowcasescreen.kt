@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.cyna.app.ui.core.components.*
 import com.cyna.app.ui.core.theme.AppTheme
 import java.time.LocalDate
+import dev.kindling.core.components.*
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Shared preview wrapper
@@ -83,40 +84,40 @@ private fun PreviewButtons() {
     PreviewSurface {
         SectionLabel("Variants")
         Row2 {
-            Button("Default",     onClick = {}, modifier = Modifier.weight(1f))
-            Button("Outline",     onClick = {}, variant = ButtonVariant.Outline,     modifier = Modifier.weight(1f))
+            KButton("Default",     onClick = {}, modifier = Modifier.weight(1f))
+            KButton("Outline",     onClick = {}, variant = ButtonVariant.Outline,     modifier = Modifier.weight(1f))
         }
         Row2 {
-            Button("Secondary",   onClick = {}, variant = ButtonVariant.Secondary,   modifier = Modifier.weight(1f))
-            Button("Destructive", onClick = {}, variant = ButtonVariant.Destructive, modifier = Modifier.weight(1f))
+            KButton("Secondary",   onClick = {}, variant = ButtonVariant.Secondary,   modifier = Modifier.weight(1f))
+            KButton("Destructive", onClick = {}, variant = KButtonVariant.Destructive, modifier = Modifier.weight(1f))
         }
         Row2 {
-            Button("Ghost",       onClick = {}, variant = ButtonVariant.Ghost,       modifier = Modifier.weight(1f))
-            Button("Link",        onClick = {}, variant = ButtonVariant.Link,        modifier = Modifier.weight(1f))
+            KButton("Ghost",       onClick = {}, variant = KButtonVariant.Ghost,       modifier = Modifier.weight(1f))
+            KButton("Link",        onClick = {}, variant = KButtonVariant.Link,        modifier = Modifier.weight(1f))
         }
 
         SectionLabel("Sizes")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Button("Sm",      onClick = {}, size = ButtonSize.Sm)
-            Button("Default", onClick = {})
-            Button("Lg",      onClick = {}, size = ButtonSize.Lg)
+            KButton("Sm",      onClick = {}, size = KButtonSize.Sm)
+            KButton("Default", onClick = {})
+            KButton("Lg",      onClick = {}, size = KButtonSize.Lg)
         }
 
         SectionLabel("States")
         Row2 {
-            Button("Loading",  onClick = {}, isLoading = true, modifier = Modifier.weight(1f))
-            Button("Disabled", onClick = {}, enabled   = false, modifier = Modifier.weight(1f))
+            KButton("Loading",  onClick = {}, isLoading = true, modifier = Modifier.weight(1f))
+            KButton("Disabled", onClick = {}, enabled   = false, modifier = Modifier.weight(1f))
         }
 
         SectionLabel("Icon size")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = {}, size = ButtonSize.Icon) {
+            KButton(onClick = {}, size = KButtonSize.Icon) {
                 Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp))
             }
-            Button(onClick = {}, size = ButtonSize.Icon, variant = ButtonVariant.Outline) {
+            KButton(onClick = {}, size = KButtonSize.Icon, variant = KButtonVariant.Outline) {
                 Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(16.dp))
             }
-            Button(onClick = {}, size = ButtonSize.Icon, variant = ButtonVariant.Destructive) {
+            KButton(onClick = {}, size = KButtonSize.Icon, variant = KButtonVariant.Destructive) {
                 Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
             }
         }
@@ -385,8 +386,8 @@ private fun PreviewEmpty() {
                 EmptyDescription("You haven't created any projects yet. Get started by creating your first project.")
             }
             EmptyContent {
-                Button(text = "Create Project", onClick = {})
-                Button(text = "Import Project",  onClick = {}, variant = ButtonVariant.Outline)
+                KButton(text = "Create Project", onClick = {})
+                KButton(text = "Import Project",  onClick = {}, variant = KButtonVariant.Outline)
             }
         }
 
@@ -407,7 +408,7 @@ private fun PreviewEmpty() {
                 EmptyTitle("Cloud Storage Empty")
                 EmptyDescription("Upload files to your cloud storage to access them anywhere.")
             }
-            EmptyContent { Button(text = "Upload Files", onClick = {}) }
+            EmptyContent { KButton(text = "Upload Files", onClick = {}) }
         }
 
         Divider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
@@ -428,7 +429,7 @@ private fun PreviewEmpty() {
                 EmptyTitle("No Notifications")
                 EmptyDescription("You're all caught up. New notifications will appear here.")
             }
-            EmptyContent { Button(text = "Refresh", onClick = {}, variant = ButtonVariant.Outline) }
+            EmptyContent { KButton(text = "Refresh", onClick = {}, variant = KButtonVariant.Outline) }
         }
 
         Divider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
@@ -446,7 +447,7 @@ private fun PreviewEmpty() {
                 EmptyTitle("User Offline")
                 EmptyDescription("This user is currently offline. Leave a message or try again later.")
             }
-            EmptyContent { Button(text = "Leave Message", onClick = {}) }
+            EmptyContent { KButton(text = "Leave Message", onClick = {}) }
         }
     }
 }
@@ -513,7 +514,7 @@ private fun DirectionDemoCard(isRtl: Boolean) {
                 label = if (isRtl) "كلمة المرور" else "Password",
                 value = "", onValueChange = {}, isPassword = true
             )
-            Button(
+            KButton(
                 text = if (isRtl) "تسجيل الدخول" else "Sign in",
                 onClick = {}, modifier = Modifier.fillMaxWidth()
             )
@@ -543,8 +544,8 @@ private fun PreviewDialog() {
                 Text("This action cannot be undone. This will permanently delete your account.",
                     fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
-                    Button("Cancel",         onClick = {}, variant = ButtonVariant.Outline,     size = ButtonSize.Sm)
-                    Button("Delete account", onClick = {}, variant = ButtonVariant.Destructive, size = ButtonSize.Sm)
+                    KButton("Cancel",         onClick = {}, variant = KButtonVariant.Outline,     size = KButtonSize.Sm)
+                    KButton("Delete account", onClick = {}, variant = KButtonVariant.Destructive, size = KButtonSize.Sm)
                 }
             }
         }
@@ -560,8 +561,8 @@ private fun PreviewDialog() {
                 DialogHeader(title = "Edit profile", description = "Make changes here. Click save when done.")
                 FormField(label = "Name", value = "John Doe", onValueChange = {})
                 DialogFooter {
-                    Button("Cancel",       onClick = {}, variant = ButtonVariant.Outline, size = ButtonSize.Sm)
-                    Button("Save changes", onClick = {}, size = ButtonSize.Sm)
+                    KButton("Cancel",       onClick = {}, variant = KButtonVariant.Outline, size = KButtonSize.Sm)
+                    KButton("Save changes", onClick = {}, size = KButtonSize.Sm)
                 }
             }
         }
@@ -634,7 +635,7 @@ private fun PreviewToaster() {
                 verticalAlignment = Alignment.CenterVertically) {
                 Text("Email sent.", fontSize = 13.sp, fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
-                TextButton(onClick = {}) {
+                TextKButton(onClick = {}) {
                     Text("Undo", fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary)
                 }

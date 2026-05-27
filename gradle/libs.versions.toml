@@ -14,7 +14,7 @@ koin = "3.5.0"
 # Ktor Client
 ktor = "2.3.7"
 kotlinxSerialization = "1.6.0"
-
+kindling = "0.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +48,10 @@ ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version
 
 # Kotlinx Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+kindling-core    = { group = "io.github.clementbobin.kindling", name = "core",    version.ref = "kindling" }
+kindling-utils   = { group = "io.github.clementbobin.kindling", name = "utils",   version.ref = "kindling" }
+kindling-compose = { group = "io.github.clementbobin.kindling", name = "compose", version.ref = "kindling" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
