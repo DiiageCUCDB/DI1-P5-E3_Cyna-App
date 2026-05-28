@@ -1,11 +1,15 @@
 package com.cyna.app.di
 
+import com.cyna.app.BuildConfig
 import com.cyna.app.data.remote.LoginAPI
-import com.cyna.app.data.repository.*
-import com.cyna.app.domain.repository.*
 import com.cyna.app.data.remote.createHttpClient
-import org.koin.dsl.module
+import com.cyna.app.data.repository.LoginRepositoryImpl
+import com.cyna.app.domain.repository.LoginRepository
+import com.cyna.app.mock.registry.buildMockEngine
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.cio.CIO
+import org.koin.dsl.module
 
 private const val RMAPI_URL = "http://98.66.234.231:8000/api/"
 
@@ -15,6 +19,9 @@ private const val RMAPI_URL = "http://98.66.234.231:8000/api/"
  * This module defines all the dependencies that will be available for injection
  * throughout the application. It configures how dependencies are created and
  * their lifecycle (singleton, factory, etc.).
+* When [BuildConfig.MOCK_API] is `true` the Ktor client is backed by
+ * [buildMockEngine], which intercepts every request and delegates to
+ * [com.cyna.app.mock.registry.MockRegistry] — no network required.
  *
  * ## Usage
  * This module should be loaded when initializing the Koin container in the application.
@@ -31,15 +38,41 @@ private const val RMAPI_URL = "http://98.66.234.231:8000/api/"
  * startKoin {
  *     modules(appModule)
  * }
+* To enable mock mode add to your `local.properties`:
+ * ```
+ * MOCK_API=true
+ * ```
+ * and expose it in `build.gradle.kts`:
+ * ```kotlin
+ * buildConfigField("boolean", "MOCK_API",
+ *     properties["MOCK_API"]?.toString() ?: "false")
+ * ```
  */
 val appModule = module {
+    // ------------------------------------------------------------------
+    // Engine — real (CIO) or mock, selected at compile-time flag
+    // ------------------------------------------------------------------
+    single<HttpClientEngine> {
+        if (BuildConfig.MOCK_API) {
+            buildMockEngine(delayMs = 400L)   // simulates ~400 ms latency
+        } else {
+            CIO.create()
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // HTTP client — same factory, different engine
+    // ------------------------------------------------------------------
     single<HttpClient> {
         createHttpClient(
-            baseUrl = RMAPI_URL
+            baseUrl = RMAPI_URL,
+            engine  = get()
         )
     }
 
-    // Single instance (singleton) of LoginService
+    // ------------------------------------------------------------------
+    // API + Repository layer
+    // ------------------------------------------------------------------
     single { LoginAPI(get()) }
     single<LoginRepository> { LoginRepositoryImpl(get()) }
 
