@@ -34,5 +34,6 @@ fun App() {
         color = MaterialTheme.colorScheme.background
     ) {
         NavHost(navController)
+        Toaster()
     }
 }

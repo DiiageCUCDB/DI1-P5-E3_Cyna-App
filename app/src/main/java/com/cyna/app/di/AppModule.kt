@@ -72,10 +72,17 @@ val appModule = module {
     // ------------------------------------------------------------------
     // API + Repository layer
     // ------------------------------------------------------------------
+    // ── Remote API layer ──────────────────────────────────────────────────────
     single { LoginAPI(get()) }
     single { UserAPI(get()) }
     single { CatalogAPI(get()) }
-    single<LoginRepository> { LoginRepositoryImpl(get()) }
+    single { OrderHistoryAPI(get()) }
+ 
+    // ── Repository layer ──────────────────────────────────────────────────────
+    single<LoginRepository>  { LoginRepositoryImpl(get()) }
+    single<UserRepository>   { UserRepositoryImpl(get()) }
+    single<CatalogRepository>  { CatalogRepositoryImpl(get()) }
+    single<OrderHistoryRepository>  { OrderHistoryRepositoryImpl(get()) }
 
 
     // Add other dependencies here as needed

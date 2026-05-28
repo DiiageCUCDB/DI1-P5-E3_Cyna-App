@@ -17,6 +17,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.*
+import dev.kindling.core.components.Toaster
 
 fun createHttpClient(
     baseUrl: String,
@@ -49,8 +50,29 @@ fun createHttpClient(
         validateResponse { response ->
             println("Response status: ${response.status}")
             when (response.status.value) {
-                in 400..499 -> throw HttpException.ClientError(response.status.value, "Client error: ${response.status}")
-                in 500..599 -> throw HttpException.ServerError(response.status.value, "Server error: ${response.status}")
+                in 400..499 -> {
+                    val message = "Client error (${response.status.value})"
+                    KToastManager.warning(message, response.status.description)
+                    throw HttpException.ClientError(response.status.value, message)
+                }
+                in 500..599 -> {
+                    val message = "Server error (${response.status.value})"
+                    KToastManager.error(message, response.status.description)
+                    throw HttpException.ServerError(response.status.value, message)
+                }
+            }
+        }
+
+        handleResponseExceptionWithRequest { exception, _ ->
+            when (exception) {
+                is HttpException.NotAccepted ->
+                    KToastManager.warning("Unexpected response", exception.message)
+                is HttpException.ClientError ->
+                    KToastManager.warning("Client error (${exception.statusCode})", exception.message)
+                is HttpException.ServerError ->
+                    KToastManager.error("Server error (${exception.statusCode})", exception.message)
+                else ->
+                    KToastManager.error("Network error", exception.message)
             }
         }
     }
@@ -64,7 +86,10 @@ inline fun <reified T> HttpRequestBuilder.setBodyJson(body: T) {
 fun HttpResponse.accept(vararg codes: HttpStatusCode) = apply {
     println("Checking response status: $status, accepted codes: ${codes.joinToString()}")
     if (status !in codes) {
-        throw HttpException.NotAccepted("HTTP $status not accepted. Expected: ${codes.joinToString()}")
+        val message = "Unexpected status: HTTP $status"
+        val description = "Expected: ${codes.joinToString()}"
+        KToastManager.warning(message, description)
+        throw HttpException.NotAccepted("$message. $description")
     }
 }
 

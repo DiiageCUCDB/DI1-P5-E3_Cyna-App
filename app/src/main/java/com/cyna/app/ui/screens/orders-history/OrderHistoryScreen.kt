@@ -1,4 +1,4 @@
-package com.cyna.app.ui.screens.orders
+package com.cyna.app.ui.screens.orders-history
 
 import android.app.Application
 import androidx.compose.animation.animateColorAsState
