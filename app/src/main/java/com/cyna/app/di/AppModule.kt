@@ -1,10 +1,9 @@
 package com.cyna.app.di
 
 import com.cyna.app.BuildConfig
-import com.cyna.app.data.remote.LoginAPI
-import com.cyna.app.data.remote.createHttpClient
-import com.cyna.app.data.repository.LoginRepositoryImpl
-import com.cyna.app.domain.repository.LoginRepository
+import com.cyna.app.data.remote.*
+import com.cyna.app.data.repository.*
+import com.cyna.app.domain.repository.*
 import com.cyna.app.mock.registry.buildMockEngine
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -74,6 +73,8 @@ val appModule = module {
     // API + Repository layer
     // ------------------------------------------------------------------
     single { LoginAPI(get()) }
+    single { UserAPI(get()) }
+    single { CatalogAPI(get()) }
     single<LoginRepository> { LoginRepositoryImpl(get()) }
 
 
