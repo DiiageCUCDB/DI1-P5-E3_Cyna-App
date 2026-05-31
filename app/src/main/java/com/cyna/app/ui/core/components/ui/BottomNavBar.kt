@@ -29,6 +29,7 @@ private val navItems = listOf(
 fun BottomNavBar(
     currentTab: NavTab,
     onTabSelected: (NavTab) -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cs = MaterialTheme.colorScheme
@@ -50,9 +51,7 @@ fun BottomNavBar(
                 selected = isActive,
                 onClick = {
                     if (item.tab != null) onTabSelected(item.tab)
-                    else {
-                        // Handle logout action here, e.g., call a logout function or navigate to a login screen
-                    }
+                    else onLogout()
                 },
                 icon = {
                     Icon(

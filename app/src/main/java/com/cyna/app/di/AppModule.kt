@@ -26,11 +26,11 @@ private const val RMAPI_URL = "http://98.66.234.231:8000/api/"
  * This module should be loaded when initializing the Koin container in the application.
  *
  * ## Dependencies Included
- * - [LoginRepository] as singleton using [LoginRepositoryImpl] implementation
+ * - [AuthRepository] as singleton using [AuthRepositoryImpl] implementation
  *
  * @see org.koin.dsl.module
  * @see single
- * @see factory
+ * @see org.koin.plugin.module.dsl.factory
  *
  * @sample
  * // Initialize Koin with this module
@@ -73,13 +73,13 @@ val appModule = module {
     // API + Repository layer
     // ------------------------------------------------------------------
     // ── Remote API layer ──────────────────────────────────────────────────────
-    single { LoginAPI(get()) }
+    single { AuthAPI(get()) }
     single { UserAPI(get()) }
     single { CatalogAPI(get()) }
     single { OrderHistoryAPI(get()) }
 
     // ── Repository layer ──────────────────────────────────────────────────────
-    single<LoginRepository>  { LoginRepositoryImpl(get()) }
+    single<AuthRepository>         { AuthRepositoryImpl(get()) }
     single<UserRepository>   { UserRepositoryImpl(get()) }
     single<CatalogRepository>  { CatalogRepositoryImpl(get()) }
     single<OrderHistoryRepository>  { OrderHistoryRepositoryImpl(get()) }

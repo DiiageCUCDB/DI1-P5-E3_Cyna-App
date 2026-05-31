@@ -4,7 +4,6 @@ import com.cyna.app.data.remote.UserAPI
 import com.cyna.app.domain.model.Subscription
 import com.cyna.app.domain.model.User
 import com.cyna.app.domain.repository.UserRepository
-import dev.kindling.core.components.KToastData
 
 internal class UserRepositoryImpl(
     private val userAPI: UserAPI

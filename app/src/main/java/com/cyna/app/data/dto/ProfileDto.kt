@@ -39,6 +39,3 @@ internal data class SubscriptionDto(
     val endsAt: String,
     val createdAt: String
 )
-
-@Serializable
-internal data class MessageResponse(val message: String)

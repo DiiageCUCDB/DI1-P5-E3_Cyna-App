@@ -1,5 +1,6 @@
 package com.cyna.app.data.remote
 
+import com.cyna.app.data.dto.ErrorResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.cio.CIO
@@ -18,6 +19,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.*
 import dev.kindling.core.components.KToastManager
+import io.ktor.client.call.body
+import io.ktor.client.statement.bodyAsText
 
 fun createHttpClient(
     baseUrl: String,
@@ -48,32 +51,31 @@ fun createHttpClient(
 
     install(HttpCallValidator) {
         validateResponse { response ->
-            println("Response status: ${response.status}")
-            when (response.status.value) {
-                in 400..499 -> {
-                    val message = "Client error (${response.status.value})"
-                    KToastManager.warning(message, response.status.description)
-                    throw HttpException.ClientError(response.status.value, message)
+            val status = response.status.value
+            when {
+                status == 200 -> Unit // OK, do nothing
+
+                status in 400..499 -> {
+                    val msg = runCatching { response.body<ErrorResponse>().text }
+                        .recoverCatching { response.bodyAsText().take(200) }
+                        .getOrDefault("No details provided")
+                    KToastManager.warning("Client error ($status)", msg)
+                    throw HttpException.ClientError(status, msg)
                 }
-                in 500..599 -> {
-                    val message = "Server error (${response.status.value})"
-                    KToastManager.error(message, response.status.description)
-                    throw HttpException.ServerError(response.status.value, message)
+
+                status in 500..599 -> {
+                    val msg = runCatching { response.body<ErrorResponse>().text }
+                        .recoverCatching { response.bodyAsText().take(200) }
+                        .getOrDefault("No details provided")
+                    KToastManager.error("Server error ($status)", msg)
+                    throw HttpException.ServerError(status, msg)
                 }
             }
         }
 
         handleResponseExceptionWithRequest { exception, _ ->
-            when (exception) {
-                is HttpException.NotAccepted ->
-                    KToastManager.warning("Unexpected response", exception.message)
-                is HttpException.ClientError ->
-                    KToastManager.warning("Client error (${exception.statusCode})", exception.message)
-                is HttpException.ServerError ->
-                    KToastManager.error("Server error (${exception.statusCode})", exception.message)
-                else ->
-                    KToastManager.error("Network error", exception.message)
-            }
+            if (exception is HttpException) return@handleResponseExceptionWithRequest // already handled above
+            KToastManager.error("Network error", exception.message ?: "No details provided")
         }
     }
 }
