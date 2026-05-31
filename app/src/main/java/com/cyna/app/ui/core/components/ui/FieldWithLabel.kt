@@ -81,6 +81,7 @@ fun FieldMaskWithLabel(
         ?: "",
     enabled: Boolean = true,
     autoValidate: Boolean = true,
+    onValidationChange: ((Boolean) -> Unit)? = null,
     isError: Boolean = false,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
@@ -98,6 +99,7 @@ fun FieldMaskWithLabel(
                     placeholder = placeholder,
                     enabled = enabled,
                     autoValidate = autoValidate,
+                    onValidationChange = onValidationChange,
                     isError = isError,
                     modifier = Modifier.weight(1f)
                 )
@@ -114,6 +116,7 @@ fun FieldMaskWithLabel(
                 placeholder = placeholder,
                 enabled = enabled,
                 autoValidate = autoValidate,
+                onValidationChange = onValidationChange,
                 isError = isError,
                 modifier = Modifier.fillMaxWidth()
             )

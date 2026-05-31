@@ -59,6 +59,7 @@ fun ProfileScreen(navController: NavController) {
             state = state,
             onNameChange = viewModel::onNameChange,
             onEmailChange = viewModel::onEmailChange,
+            onEmailValidationChange = viewModel::onEmailValidationChange,
             onCurrentPasswordChange = viewModel::onCurrentPasswordChange,
             onNewPasswordChange = viewModel::onNewPasswordChange,
             onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
@@ -76,6 +77,7 @@ private fun ProfileContent(
     state: ProfileContracts.UiState = ProfileContracts.UiState(),
     onNameChange: (String) -> Unit = {},
     onEmailChange: (String) -> Unit = {},
+    onEmailValidationChange: (Boolean) -> Unit = {},
     onCurrentPasswordChange: (String) -> Unit = {},
     onNewPasswordChange: (String) -> Unit = {},
     onConfirmPasswordChange: (String) -> Unit = {},
@@ -113,6 +115,7 @@ private fun ProfileContent(
                     value = state.emailInput,
                     mask = KMaskPattern.Email,
                     onValueChange = onEmailChange,
+                    onValidationChange = onEmailValidationChange,
                     trailingContent = if (state.user?.isConfirmed == true) {
                         {
                             Spacer(Modifier.width(6.dp))
@@ -135,6 +138,7 @@ private fun ProfileContent(
                     KButton(
                         onClick = onSaveProfile,
                         isLoading = state.savingProfile,
+                        enabled = state.emailValid,
                         size = KButtonSize.Sm
                     ) { Text(if (state.savingProfile) "Saving…" else "Save changes") }
                 }

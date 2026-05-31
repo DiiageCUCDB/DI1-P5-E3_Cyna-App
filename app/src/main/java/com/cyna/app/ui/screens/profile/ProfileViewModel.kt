@@ -16,6 +16,7 @@ interface ProfileContracts {
         val loadingSubs: Boolean = true,
         val nameInput: String = "",
         val emailInput: String = "",
+        val emailValid: Boolean = true,
         val savingProfile: Boolean = false,
         val currentPassword: String = "",
         val newPassword: String = "",
@@ -75,6 +76,7 @@ class ProfileViewModel(application: Application) :
     fun onNameChange(v: String)            = updateState { copy(nameInput = v) }
     fun onEmailChange(v: String)           = updateState { copy(emailInput = v) }
     fun onCurrentPasswordChange(v: String) = updateState { copy(currentPassword = v) }
+    fun onEmailValidationChange(valid: Boolean) = updateState { copy(emailValid = valid) }
     fun onNewPasswordChange(v: String) = updateState {
         copy(newPassword = v, passwordError = null)
     }
@@ -84,6 +86,10 @@ class ProfileViewModel(application: Application) :
 
     fun saveProfile() {
         val s = state.value
+        if (!s.emailValid) {
+            KToastManager.warning("Please enter a valid email address")
+            return
+        }
         updateState { copy(savingProfile = true) }
         fetchData(
             source = { userRepository.updateProfile(s.nameInput, s.emailInput) },
