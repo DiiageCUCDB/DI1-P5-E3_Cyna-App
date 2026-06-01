@@ -75,13 +75,11 @@ val appModule = module {
     // ── Remote API layer ──────────────────────────────────────────────────────
     single { AuthAPI(get()) }
     single { UserAPI(get()) }
-    single { CatalogAPI(get()) }
     single { OrderHistoryAPI(get()) }
 
     // ── Repository layer ──────────────────────────────────────────────────────
     single<AuthRepository>         { AuthRepositoryImpl(get()) }
     single<UserRepository>   { UserRepositoryImpl(get()) }
-    single<CatalogRepository>  { CatalogRepositoryImpl(get()) }
     single<OrderHistoryRepository>  { OrderHistoryRepositoryImpl(get()) }
 
 

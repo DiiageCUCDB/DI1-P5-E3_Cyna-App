@@ -73,7 +73,7 @@ data class MockProduct(
     val description: String,
     val priceMonthly: Double,
     val priceYearly: Double,
-    val isAvailable: Boolean,
+    val status: String,
     val priority: Int,
     val createdAt: String,
 )
@@ -162,16 +162,17 @@ object MockFactories {
     )
 
     fun makeProduct(categoryId: String = uuid()) = MockProduct(
-        id = uuid(),
-        categoryId = categoryId,
-        imageUrl = "https://picsum.photos/seed/${(1..9999).random()}/800/600",
-        name = "${randomOf(companies)} ${randomOf(productSfx)}",
+        id          = uuid(),
+        categoryId  = categoryId,
+        imageUrl    = "https://picsum.photos/seed/${(1..9999).random()}/800/600",
+        name        = "${randomOf(companies)} ${randomOf(productSfx)}",
         description = lorem(20),
         priceMonthly = randomPrice(49.0, 999.0),
-        priceYearly = randomPrice(490.0, 9990.0),
-        isAvailable = Random.nextDouble() < 0.85,
-        priority = Random.nextInt(6),
-        createdAt = isoDate(),
+        priceYearly  = randomPrice(490.0, 9990.0),
+        status      = listOf("available", "available", "available",   // ✅ ~75% available
+            "unavailable", "out_of_stock").random(),
+        priority    = Random.nextInt(6),
+        createdAt   = isoDate(),
     )
 
     fun makeSubscription(

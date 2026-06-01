@@ -56,9 +56,7 @@ val categoryHandlers: List<MockHandler> = listOf(
 // ---------------------------------------------------------------------------
 
 private const val CATALOG_PAGE_SIZE = 9
-
 val catalogHandlers: List<MockHandler> = listOf(
-
     MockHandler(
         method = HttpMethod.Get,
         path = "/catalog/products",
@@ -77,7 +75,7 @@ val catalogHandlers: List<MockHandler> = listOf(
                     !p.description.lowercase().contains(q)) return@filter false
                 if (catIds.isNotEmpty() && p.categoryId !in catIds) return@filter false
                 if (maxPrice != null && p.priceMonthly > maxPrice) return@filter false
-                if (onlyAvailable && !p.isAvailable) return@filter false
+                if (onlyAvailable && p.status != "available") return@filter false  // ✅
                 true
             }
 
@@ -94,13 +92,8 @@ val catalogHandlers: List<MockHandler> = listOf(
             val offset = (safePage - 1) * pageSize
             val items = filtered.drop(offset).take(pageSize)
 
-            PaginatedProducts(
-                items = items,
-                total = total,
-                page = safePage,
-                pageSize = pageSize,
-                totalPages = totalPages,
-            )
+            PaginatedProducts(items = items, total = total, page = safePage,
+                pageSize = pageSize, totalPages = totalPages)
         }
     ),
 )

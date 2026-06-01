@@ -11,7 +11,7 @@ internal data class ProductDto(
     val description: String,
     val priceMonthly: Double,
     val priceYearly: Double,
-    val isAvailable: Boolean,
+    val status: String,
     val priority: Int,
     val createdAt: String
 )
