@@ -15,6 +15,7 @@ koin = "4.2.1"
 ktor = "3.5.0"
 kotlinxSerialization = "1.11.0"
 kindling = "1.0.9"
+coil = "2.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,6 +56,8 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kindling-core    = { group = "io.github.clementbobin.kindling", name = "core",    version.ref = "kindling" }
 kindling-utils   = { group = "io.github.clementbobin.kindling", name = "utils",   version.ref = "kindling" }
 kindling-compose = { group = "io.github.clementbobin.kindling", name = "compose", version.ref = "kindling" }
+
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
