@@ -42,7 +42,7 @@ val authHandlers: List<MockHandler> = listOf(
             val fullName = json?.get("fullName")?.jsonPrimitive?.content ?: ""
             val password = json?.get("password")?.jsonPrimitive?.content ?: ""
 
-            MockFactories.makeAuthResponse(MockFactories.makeUser(email = email, name = fullName))
+            MockFactories.makeAuthResponse(MockFactories.makeUser(email = email, firstName = fullName))
         }
     ),
 
