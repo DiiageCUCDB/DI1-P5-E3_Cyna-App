@@ -1,6 +1,5 @@
 package com.cyna.app.ui.core.components.ui.order
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.HorizontalDivider
@@ -35,27 +33,24 @@ import dev.kindling.core.components.Skeleton
 import dev.kindling.utils.method.formatDate
 import dev.kindling.utils.method.formatPrice
 
-// ── Status badge colors ───────────────────────────────────────────────────────
+// ── Status badge — PascalCase (enum .NET) ────────────────────────────────────
 
 @Composable
 private fun statusVariant(status: String): KBadgeVariant {
     val cs = MaterialTheme.colorScheme
     return when (status) {
-        "active", "paid" -> KBadgeVariant(
+        "Paid"    -> KBadgeVariant(
             bg = { Color(0xFF166534).copy(alpha = .12f) },
             fg = { Color(0xFF166534) }
         )
-        "terminated" -> KBadgeVariant(
-            bg = { cs.surfaceVariant },
-            fg = { cs.onSurfaceVariant }
-        )
-        "refunded", "failed" -> KBadgeVariant(
-            bg = { cs.error.copy(alpha = .10f) },
-            fg = { cs.error }
-        )
-        "pending" -> KBadgeVariant(
+        "Pending" -> KBadgeVariant(
             bg = { Color(0xFF78350F).copy(alpha = .12f) },
             fg = { Color(0xFF92400E) }
+        )
+        "Failed",
+        "Refunded" -> KBadgeVariant(
+            bg = { cs.error.copy(alpha = .10f) },
+            fg = { cs.error }
         )
         else -> KBadgeVariant(
             bg = { cs.surfaceVariant },
@@ -65,27 +60,16 @@ private fun statusVariant(status: String): KBadgeVariant {
 }
 
 // ── Order row ─────────────────────────────────────────────────────────────────
+//
+// AccountOrder (v1) :
+//   { id, status, totalAmount, createdAt, invoiceUrl, items: List<OrderItem> }
+//   computed: primaryProductName, itemsSummary
 
 @Composable
 fun OrderRow(order: AccountOrder, isLast: Boolean) {
     val cs = MaterialTheme.colorScheme
 
-    val paymentLine = buildString {
-        append(order.paymentMethod)
-        if (order.paymentLast4.isNotBlank()) append(" ···· ${order.paymentLast4}")
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(
-                if (!isLast) Modifier.border(
-                    width = 0.dp,
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(0.dp)
-                ) else Modifier
-            )
-    ) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,14 +77,18 @@ fun OrderRow(order: AccountOrder, isLast: Boolean) {
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Left: name + meta
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            // Gauche : nom principal + statut + résumé des autres items
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = order.productName,
+                        // Nom du premier produit — computed property
+                        text = order.primaryProductName,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = cs.onSurface,
@@ -108,35 +96,50 @@ fun OrderRow(order: AccountOrder, isLast: Boolean) {
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
                     )
-                    KBadge(
-                        variant = statusVariant(order.status)
-                    ) {
+                    KBadge(variant = statusVariant(order.status)) {
                         Text(
-                            text = order.statusLabel,
-                            fontSize = 10.sp,
+                            // Libellé localisé du statut
+                            text = localizeStatus(order.status),
+                            fontSize = 10.sp
                         )
                     }
                 }
+
+                // Date de commande
                 Text(
-                    text = "${formatDate(order.createdAt)} · ${order.type}",
+                    text = formatDate(order.createdAt),
                     fontSize = 11.sp,
                     color = cs.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = paymentLine,
-                    fontSize = 11.sp,
-                    color = cs.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+
+                // Résumé des items si plusieurs produits
+                if (order.items.size > 1) {
+                    Text(
+                        text = order.itemsSummary,
+                        fontSize = 11.sp,
+                        color = cs.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                // Nombre d'articles
+                if (order.items.isNotEmpty()) {
+                    Text(
+                        text = "${order.items.size} article${if (order.items.size > 1) "s" else ""}",
+                        fontSize = 10.sp,
+                        color = cs.onSurfaceVariant.copy(.7f)
+                    )
+                }
             }
 
-            // Right: amount
+            // Droite : montant + facture
             Column(horizontalAlignment = Alignment.End) {
+                // totalAmount depuis OrderSummaryDto
                 Text(
-                    text = formatPrice(order.total),
+                    text = formatPrice(order.totalAmount),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = cs.onSurface
@@ -144,7 +147,7 @@ fun OrderRow(order: AccountOrder, isLast: Boolean) {
                 if (order.invoiceUrl != null) {
                     Spacer(Modifier.height(4.dp))
                     KButton(
-                        onClick = { /* open invoice URL */ },
+                        onClick = { /* TODO: ouvrir invoiceUrl */ },
                         variant = KButtonVariant.Outline,
                         size = KButtonSize.Xs
                     ) {
@@ -170,6 +173,16 @@ fun OrderRow(order: AccountOrder, isLast: Boolean) {
     }
 }
 
+// ── Localisation du statut PascalCase ────────────────────────────────────────
+
+private fun localizeStatus(status: String): String = when (status) {
+    "Paid"     -> "Payé"
+    "Pending"  -> "En attente"
+    "Failed"   -> "Échoué"
+    "Refunded" -> "Remboursé"
+    else       -> status
+}
+
 // ── Skeleton row ──────────────────────────────────────────────────────────────
 
 @Composable
@@ -181,7 +194,10 @@ fun OrderRowSkeleton() {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top
     ) {
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
             Skeleton(modifier = Modifier.fillMaxWidth(.55f).height(12.dp))
             Skeleton(modifier = Modifier.fillMaxWidth(.75f).height(10.dp))
             Skeleton(modifier = Modifier.fillMaxWidth(.45f).height(10.dp))

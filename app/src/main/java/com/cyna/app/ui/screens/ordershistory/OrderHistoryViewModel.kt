@@ -26,9 +26,7 @@ class OrderHistoryViewModel(application: Application) :
     private val orderHistoryRepository: OrderHistoryRepository by inject()
     private val userRepository: UserRepository by inject()
 
-    init {
-        load()
-    }
+    init { load() }
 
     private fun load() {
         fetchData(
@@ -61,8 +59,8 @@ class OrderHistoryViewModel(application: Application) :
         )
     }
 
-    fun onSearchChange(q: String)    = updateState { copy(searchQuery = q) }
-    fun onYearChange(year: String)   = updateState { copy(selectedYear = year) }
+    fun onSearchChange(q: String)  = updateState { copy(searchQuery = q) }
+    fun onYearChange(year: String) = updateState { copy(selectedYear = year) }
 
     fun retry() {
         updateState { copy(loading = true, loadingUser = true, error = null) }

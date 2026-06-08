@@ -20,7 +20,7 @@ import org.koin.dsl.module
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 
-private const val RMAPI_URL = "http://98.66.234.231:8000/api/"
+private const val RMAPI_URL = " http://localhost:5104/"
 
 val appModule = module {
     // ------------------------------------------------------------------

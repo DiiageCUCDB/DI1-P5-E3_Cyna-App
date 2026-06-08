@@ -9,43 +9,53 @@ internal class UserRepositoryImpl(
     private val userAPI: UserAPI
 ) : UserRepository {
 
+    // UserProfileDto → User
     override suspend fun getMe(): User =
         userAPI.getMe().let { dto ->
             User(
-                id          = dto.id,
-                name        = dto.name,
-                email       = dto.email,
-                role        = dto.role,
-                isConfirmed = dto.isConfirmed
+                id             = dto.id,
+                email          = dto.email,
+                firstName      = dto.firstName,
+                lastName       = dto.lastName,
+                role           = dto.role,
+                isEmailVerified = dto.isEmailVerified
             )
         }
 
-    override suspend fun updateProfile(name: String, email: String): User =
-        userAPI.updateProfile(name, email).let { dto ->
-            User(
-                id          = dto.id,
-                name        = dto.name,
-                email       = dto.email,
-                role        = dto.role,
-                isConfirmed = dto.isConfirmed
-            )
-        }
+    // UpdateProfileDto : { firstName, lastName, email }
+    override suspend fun updateProfile(
+        firstName: String,
+        lastName: String,
+        email: String
+    ): User = userAPI.updateProfile(firstName, lastName, email).let { dto ->
+        User(
+            id             = dto.id,
+            email          = dto.email,
+            firstName      = dto.firstName,
+            lastName       = dto.lastName,
+            role           = dto.role,
+            isEmailVerified = dto.isEmailVerified
+        )
+    }
 
-    override suspend fun updatePassword(currentPassword: String, newPassword: String): String =
-        userAPI.updatePassword(currentPassword, newPassword).message
+    override suspend fun updatePassword(
+        currentPassword: String,
+        newPassword: String
+    ): String = userAPI.updatePassword(currentPassword, newPassword).message
 
+    // SubscriptionDto → Subscription  (status PascalCase "Active")
     override suspend fun getSubscriptions(): List<Subscription> =
         userAPI.getSubscriptions()
-            .filter { it.status == "active" }
+            .filter { it.status == "Active" }
             .map { dto ->
                 Subscription(
-                    id          = dto.id,
-                    productName = dto.productName,
-                    status      = dto.status,
-                    duration    = dto.duration,
-                    quantity    = dto.quantity,
-                    unitPrice   = dto.unitPrice,
-                    endsAt      = dto.endsAt
+                    id                 = dto.id,
+                    status             = dto.status,
+                    productName        = dto.productName,
+                    planName           = dto.planName,
+                    currentPeriodStart = dto.currentPeriodStart,
+                    currentPeriodEnd   = dto.currentPeriodEnd,
+                    autoRenew          = dto.autoRenew
                 )
             }
 

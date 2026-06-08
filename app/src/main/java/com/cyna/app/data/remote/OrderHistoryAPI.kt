@@ -11,13 +11,14 @@ import kotlinx.serialization.json.Json
 
 internal class OrderHistoryAPI(private val client: HttpClient) {
 
+    // GET /user/orders  →  OrderSummaryDto[]
     suspend fun getAccountOrders(): List<AccountOrderDto> {
-        val response = client.get("account/orders")
+        val response = client.get("user/orders")
             .accept(HttpStatusCode.OK)
 
         val rawBody = response.bodyAsText()
-        println("RAW JSON: $rawBody")  // visible in Logcat
+        println("RAW JSON /user/orders: $rawBody")
 
-        return Json.decodeFromString(rawBody)
+        return Json { ignoreUnknownKeys = true }.decodeFromString(rawBody)
     }
 }

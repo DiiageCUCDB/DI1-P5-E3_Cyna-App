@@ -26,11 +26,11 @@ import dev.kindling.utils.method.getYear
 
 @Composable
 private fun OrderHistorySkeleton() {
+    val cs = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
         repeat(2) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Skeleton(modifier = Modifier.width(48.dp).height(14.dp))
-                val cs = MaterialTheme.colorScheme
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = cs.surface,
@@ -62,10 +62,10 @@ fun OrderHistoryScreen(navController: NavController) {
         navController = navController
     ) { state, viewModel ->
         OrderHistoryContent(
-            state = state,
+            state          = state,
             onSearchChange = viewModel::onSearchChange,
-            onYearChange = viewModel::onYearChange,
-            onRetry = viewModel::retry,
+            onYearChange   = viewModel::onYearChange,
+            onRetry        = viewModel::retry,
         )
     }
 }
@@ -79,10 +79,12 @@ private fun OrderHistoryContent(
 ) {
     val cs = MaterialTheme.colorScheme
 
+    // Filtre : recherche sur items[].productNameSnapshot (via primaryProductName / itemsSummary)
     val filtered = remember(state.orders, state.searchQuery, state.selectedYear) {
         state.orders.filter { order ->
             val matchSearch = state.searchQuery.isBlank() ||
-                    order.productName.contains(state.searchQuery, ignoreCase = true)
+                    order.primaryProductName.contains(state.searchQuery, ignoreCase = true) ||
+                    order.itemsSummary.contains(state.searchQuery, ignoreCase = true)
             val matchYear = state.selectedYear == "all" ||
                     getYear(order.createdAt).toString() == state.selectedYear
             matchSearch && matchYear
@@ -118,6 +120,7 @@ private fun OrderHistoryContent(
                                 fontWeight = FontWeight.SemiBold,
                                 color = cs.onSurface
                             )
+                            // Affiche user.email depuis UserProfileDto
                             if (!state.loadingUser && state.user != null) {
                                 Text(
                                     state.user.email,

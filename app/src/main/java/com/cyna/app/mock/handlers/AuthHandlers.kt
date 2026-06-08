@@ -11,7 +11,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 // ---------------------------------------------------------------------------
-// Auth handlers — mirrors handlers/auth.js
+// Auth handlers — miroir de handlers/auth.js
 // ---------------------------------------------------------------------------
 
 val authHandlers: List<MockHandler> = listOf(
@@ -62,12 +62,5 @@ val authHandlers: List<MockHandler> = listOf(
         method = HttpMethod.Post,
         path = "/auth/reset-password",
         resolver = { _, _ -> MessageResponse("Mot de passe réinitialisé avec succès.") }
-    ),
-
-    // GET /auth/me — fixed demo user
-    MockHandler(
-        method = HttpMethod.Get,
-        path = "/auth/me",
-        resolver = { _, _ -> MockFactories.makeDemoUser() }
     ),
 )

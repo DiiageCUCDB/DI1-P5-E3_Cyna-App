@@ -37,7 +37,10 @@ private fun ProfileSkeleton() {
                 color = cs.surface,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Skeleton(modifier = Modifier.fillMaxWidth(.5f).height(14.dp))
                     Skeleton(modifier = Modifier.fillMaxWidth(.7f).height(11.dp))
                     HorizontalDivider(color = cs.outline.copy(.3f))
@@ -49,6 +52,8 @@ private fun ProfileSkeleton() {
     }
 }
 
+// ── Screen entry ─────────────────────────────────────────────────────────────
+
 @Composable
 fun ProfileScreen(navController: NavController) {
     KScreen(
@@ -56,26 +61,30 @@ fun ProfileScreen(navController: NavController) {
         navController = navController
     ) { state, viewModel ->
         ProfileContent(
-            state = state,
-            onNameChange = viewModel::onNameChange,
-            onEmailChange = viewModel::onEmailChange,
-            onEmailValidationChange = viewModel::onEmailValidationChange,
-            onCurrentPasswordChange = viewModel::onCurrentPasswordChange,
-            onNewPasswordChange = viewModel::onNewPasswordChange,
-            onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
-            onSaveProfile = viewModel::saveProfile,
-            onSavePassword = viewModel::savePassword,
-            onCancelRequest = viewModel::requestCancel,
-            onDismissCancel = viewModel::dismissCancel,
-            onConfirmCancel = viewModel::confirmCancel,
+            state                    = state,
+            onFirstNameChange        = viewModel::onFirstNameChange,
+            onLastNameChange         = viewModel::onLastNameChange,
+            onEmailChange            = viewModel::onEmailChange,
+            onEmailValidationChange  = viewModel::onEmailValidationChange,
+            onCurrentPasswordChange  = viewModel::onCurrentPasswordChange,
+            onNewPasswordChange      = viewModel::onNewPasswordChange,
+            onConfirmPasswordChange  = viewModel::onConfirmPasswordChange,
+            onSaveProfile            = viewModel::saveProfile,
+            onSavePassword           = viewModel::savePassword,
+            onCancelRequest          = viewModel::requestCancel,
+            onDismissCancel          = viewModel::dismissCancel,
+            onConfirmCancel          = viewModel::confirmCancel,
         )
     }
 }
 
+// ── Content ───────────────────────────────────────────────────────────────────
+
 @Composable
 private fun ProfileContent(
     state: ProfileContracts.UiState = ProfileContracts.UiState(),
-    onNameChange: (String) -> Unit = {},
+    onFirstNameChange: (String) -> Unit = {},
+    onLastNameChange: (String) -> Unit = {},
     onEmailChange: (String) -> Unit = {},
     onEmailValidationChange: (Boolean) -> Unit = {},
     onCurrentPasswordChange: (String) -> Unit = {},
@@ -100,23 +109,37 @@ private fun ProfileContent(
             ProfileSkeleton()
         } else {
 
-            // Personal Info
+            // ── Informations personnelles ────────────────────────────────────
             SectionCard(
                 title = "Personal Information",
                 description = "Manage your contact information and email address."
             ) {
-                FieldWithLabel(
-                    label = "Full name",
-                    value = state.nameInput,
-                    onValueChange = onNameChange
-                )
+                // Prénom + Nom côte à côte
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    FieldWithLabel(
+                        label = "First name",
+                        value = state.firstNameInput,
+                        onValueChange = onFirstNameChange,
+                        placeholder = "Jean",
+                        modifier = Modifier.weight(1f)
+                    )
+                    FieldWithLabel(
+                        label = "Last name",
+                        value = state.lastNameInput,
+                        onValueChange = onLastNameChange,
+                        placeholder = "Dupont",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                // Email avec badge "Verified" si isEmailVerified
                 FieldMaskWithLabel(
                     label = "Email address",
                     value = state.emailInput,
                     mask = KMaskPattern.Email,
                     onValueChange = onEmailChange,
                     onValidationChange = onEmailValidationChange,
-                    trailingContent = if (state.user?.isConfirmed == true) {
+                    trailingContent = if (state.user?.isEmailVerified == true) {
                         {
                             Spacer(Modifier.width(6.dp))
                             Surface(
@@ -134,6 +157,7 @@ private fun ProfileContent(
                         }
                     } else null
                 )
+
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     KButton(
                         onClick = onSaveProfile,
@@ -144,7 +168,7 @@ private fun ProfileContent(
                 }
             }
 
-            // Security
+            // ── Sécurité ────────────────────────────────────────────────────
             SectionCard(
                 title = "Account Security",
                 description = "Update your password to secure access to your services."
@@ -183,7 +207,7 @@ private fun ProfileContent(
                 }
             }
 
-            // Subscriptions
+            // ── Abonnements ─────────────────────────────────────────────────
             SectionCard(
                 title = "Active Subscriptions",
                 description = "Manage your current licenses."
@@ -200,16 +224,14 @@ private fun ProfileContent(
                     )
                 } else {
                     state.subscriptions.forEach { sub ->
-                        SubscriptionRow(
-                            sub = sub,
-                            onCancel = { onCancelRequest(sub) }
-                        )
+                        SubscriptionRow(sub = sub, onCancel = { onCancelRequest(sub) })
                     }
                 }
             }
         }
     }
 
+    // Dialog de confirmation de résiliation
     state.cancelTarget?.let { sub ->
         CancelDialog(
             sub = sub,

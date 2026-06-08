@@ -27,11 +27,8 @@ object MockInitializer {
         MockRegistry.clear()
 
         MockRegistry.registerMany(
-            authHandlers
-                + productHandlers
+                authHandlers
                 + userHandlers
-                + categoryHandlers
-                + catalogHandlers
                 + subscriptionHandlers
                 + accountOrderHandlers
         )

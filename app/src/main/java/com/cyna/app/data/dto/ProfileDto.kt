@@ -2,9 +2,14 @@ package com.cyna.app.data.dto
 
 import kotlinx.serialization.Serializable
 
+// ---------------------------------------------------------------------------
+// UpdateProfileDto (PUT /user/profile body)
+// ---------------------------------------------------------------------------
+
 @Serializable
-data class UpdateProfileRequest(
-    val name: String,
+internal data class UpdateProfileRequest(
+    val firstName: String,
+    val lastName: String,
     val email: String
 )
 
@@ -14,28 +19,35 @@ data class UpdatePasswordRequest(
     val newPassword: String
 )
 
+// ---------------------------------------------------------------------------
+// UserProfileDto (GET /user/profile response)
+// { id, email, firstName, lastName, role, isEmailVerified, createdAt }
+// ---------------------------------------------------------------------------
+
 @Serializable
-data class UserDto(
-    val id: String,
+internal data class UserDto(
+    val id: Int,
     val email: String,
-    val name: String,
+    val firstName: String,
+    val lastName: String,
     val role: String,
-    val isConfirmed: Boolean,
-    val is2faEnabled: Boolean,
+    val isEmailVerified: Boolean,
     val createdAt: String
 )
 
+// ---------------------------------------------------------------------------
+// SubscriptionDto (GET /user/subscriptions items)
+// { id, status, productName, planName,
+//   currentPeriodStart, currentPeriodEnd, autoRenew }
+// ---------------------------------------------------------------------------
+
 @Serializable
-data class SubscriptionDto(
-    val id: String,
-    val userId: String,
-    val productId: String,
-    val productName: String,
+internal data class SubscriptionDto(
+    val id: Int,
     val status: String,
-    val duration: String,
-    val quantity: Int,
-    val unitPrice: Double,
-    val startsAt: String,
-    val endsAt: String,
-    val createdAt: String
+    val productName: String,
+    val planName: String,
+    val currentPeriodStart: String,
+    val currentPeriodEnd: String,
+    val autoRenew: Boolean
 )

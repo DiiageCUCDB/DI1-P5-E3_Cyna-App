@@ -54,7 +54,11 @@ fun CancelDialog(
                 Text(sub.productName, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = cs.onSurface)
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    "${sub.quantity} user${if (sub.quantity != 1) "s" else ""} · Renews ${formatDate(sub.endsAt)}",
+                    buildString {
+                        append(sub.planName)
+                        append(" · Renews ")
+                        append(formatDate(sub.currentPeriodEnd))
+                    },
                     fontSize = 11.sp, color = cs.onSurfaceVariant
                 )
             }

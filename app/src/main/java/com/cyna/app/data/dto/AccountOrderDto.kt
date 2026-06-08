@@ -2,17 +2,31 @@ package com.cyna.app.data.dto
 
 import kotlinx.serialization.Serializable
 
+// ---------------------------------------------------------------------------
+// OrderItemDto  (nested in OrderSummaryDto)
+// { id, productNameSnapshot, planNameSnapshot, quantityUsers, quantityDevices }
+// ---------------------------------------------------------------------------
+
 @Serializable
-data class AccountOrderDto(
-    val id: String,
-    val userId: String,
+internal data class OrderItemDto(
+    val id: Int,
+    val productNameSnapshot: String,
+    val planNameSnapshot: String,
+    val quantityUsers: Int,
+    val quantityDevices: Int
+)
+
+// ---------------------------------------------------------------------------
+// OrderSummaryDto  (GET /user/orders items)
+// { id, status, totalAmount, createdAt, invoiceUrl, items }
+// ---------------------------------------------------------------------------
+
+@Serializable
+internal data class AccountOrderDto(
+    val id: Int,
     val status: String,
-    val statusLabel: String,
-    val productName: String,
-    val total: Double,
-    val type: String,
-    val paymentLast4: String,
-    val paymentMethod: String,
+    val totalAmount: Double,
+    val createdAt: String,
     val invoiceUrl: String? = null,
-    val createdAt: String
+    val items: List<OrderItemDto> = emptyList()
 )

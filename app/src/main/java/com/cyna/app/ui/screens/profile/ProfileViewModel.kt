@@ -14,15 +14,19 @@ interface ProfileContracts {
         val subscriptions: List<Subscription> = emptyList(),
         val loadingUser: Boolean = true,
         val loadingSubs: Boolean = true,
-        val nameInput: String = "",
+        // Formulaire profil — firstName + lastName séparés (UpdateProfileDto v1)
+        val firstNameInput: String = "",
+        val lastNameInput: String = "",
         val emailInput: String = "",
         val emailValid: Boolean = true,
         val savingProfile: Boolean = false,
+        // Formulaire mot de passe
         val currentPassword: String = "",
         val newPassword: String = "",
         val confirmPassword: String = "",
         val savingPassword: Boolean = false,
         val passwordError: String? = null,
+        // Dialog résiliation
         val cancelTarget: Subscription? = null,
         val cancelling: Boolean = false
     )
@@ -45,10 +49,12 @@ class ProfileViewModel(application: Application) :
                 onSuccess { user ->
                     updateState {
                         copy(
-                            user        = user,
-                            nameInput   = user.name,
-                            emailInput  = user.email,
-                            loadingUser = false
+                            user           = user,
+                            // Initialise les champs depuis UserProfileDto
+                            firstNameInput = user.firstName,
+                            lastNameInput  = user.lastName,
+                            emailInput     = user.email,
+                            loadingUser    = false
                         )
                     }
                 }
@@ -73,16 +79,12 @@ class ProfileViewModel(application: Application) :
         )
     }
 
-    fun onNameChange(v: String)            = updateState { copy(nameInput = v) }
-    fun onEmailChange(v: String)           = updateState { copy(emailInput = v) }
-    fun onCurrentPasswordChange(v: String) = updateState { copy(currentPassword = v) }
+    // ── Formulaire profil ────────────────────────────────────────────────────
+
+    fun onFirstNameChange(v: String)        = updateState { copy(firstNameInput = v) }
+    fun onLastNameChange(v: String)         = updateState { copy(lastNameInput = v) }
+    fun onEmailChange(v: String)            = updateState { copy(emailInput = v) }
     fun onEmailValidationChange(valid: Boolean) = updateState { copy(emailValid = valid) }
-    fun onNewPasswordChange(v: String) = updateState {
-        copy(newPassword = v, passwordError = null)
-    }
-    fun onConfirmPasswordChange(v: String) = updateState {
-        copy(confirmPassword = v, passwordError = null)
-    }
 
     fun saveProfile() {
         val s = state.value
@@ -90,12 +92,31 @@ class ProfileViewModel(application: Application) :
             KToastManager.warning("Please enter a valid email address")
             return
         }
+        if (s.firstNameInput.isBlank()) {
+            KToastManager.warning("First name is required")
+            return
+        }
         updateState { copy(savingProfile = true) }
         fetchData(
-            source = { userRepository.updateProfile(s.nameInput, s.emailInput) },
+            // UpdateProfileDto : { firstName, lastName, email }
+            source = {
+                userRepository.updateProfile(
+                    firstName = s.firstNameInput.trim(),
+                    lastName  = s.lastNameInput.trim(),
+                    email     = s.emailInput.trim()
+                )
+            },
             onResult = {
                 onSuccess { user ->
-                    updateState { copy(savingProfile = false, user = user) }
+                    updateState {
+                        copy(
+                            savingProfile  = false,
+                            user           = user,
+                            firstNameInput = user.firstName,
+                            lastNameInput  = user.lastName,
+                            emailInput     = user.email
+                        )
+                    }
                     KToastManager.success("Profile updated successfully")
                 }
                 onFailure { e ->
@@ -105,6 +126,12 @@ class ProfileViewModel(application: Application) :
             }
         )
     }
+
+    // ── Formulaire mot de passe ──────────────────────────────────────────────
+
+    fun onCurrentPasswordChange(v: String)  = updateState { copy(currentPassword = v) }
+    fun onNewPasswordChange(v: String)      = updateState { copy(newPassword = v, passwordError = null) }
+    fun onConfirmPasswordChange(v: String)  = updateState { copy(confirmPassword = v, passwordError = null) }
 
     fun savePassword() {
         val s = state.value
@@ -141,6 +168,8 @@ class ProfileViewModel(application: Application) :
         )
     }
 
+    // ── Résiliation abonnement ───────────────────────────────────────────────
+
     fun requestCancel(sub: Subscription) = updateState { copy(cancelTarget = sub) }
     fun dismissCancel()                  = updateState { copy(cancelTarget = null) }
 
@@ -148,7 +177,7 @@ class ProfileViewModel(application: Application) :
         val target = state.value.cancelTarget ?: return
         updateState { copy(cancelling = true) }
         fetchData(
-            source = { userRepository.cancelSubscription(target.id) },
+            source = { userRepository.cancelSubscription(target.id.toString()) },
             onResult = {
                 onSuccess {
                     updateState {

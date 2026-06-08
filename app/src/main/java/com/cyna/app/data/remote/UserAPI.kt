@@ -13,26 +13,36 @@ import io.ktor.util.reflect.typeInfo
 
 internal class UserAPI(private val client: HttpClient) {
 
-    suspend fun getMe(): UserDto = client.get("auth/me")
+    // GET /user/profile  →  UserProfileDto
+    suspend fun getMe(): UserDto = client.get("user/profile")
         .accept(HttpStatusCode.OK)
         .body()
 
-    suspend fun updateProfile(name: String, email: String): UserDto =
-        client.put("user/profile") {
-            setBodyJson(UpdateProfileRequest(name, email))
-        }.accept(HttpStatusCode.OK).body()
+    // PUT /user/profile  →  UpdateProfileDto { firstName, lastName, email }
+    suspend fun updateProfile(
+        firstName: String,
+        lastName: String,
+        email: String
+    ): UserDto = client.put("user/profile") {
+        setBodyJson(UpdateProfileRequest(firstName, lastName, email))
+    }.accept(HttpStatusCode.OK).body()
 
-    suspend fun updatePassword(currentPassword: String, newPassword: String): MessageResponse =
-        client.put("user/password") {
-            setBodyJson(UpdatePasswordRequest(currentPassword, newPassword))
-        }.accept(HttpStatusCode.OK).body()
+    // PUT /user/password  →  UpdatePasswordDto { currentPassword, newPassword }
+    suspend fun updatePassword(
+        currentPassword: String,
+        newPassword: String
+    ): MessageResponse = client.put("user/password") {
+        setBodyJson(UpdatePasswordRequest(currentPassword, newPassword))
+    }.accept(HttpStatusCode.OK).body()
 
+    // GET /user/subscriptions  →  SubscriptionDto[]
     suspend fun getSubscriptions(): List<SubscriptionDto> =
         client.get("user/subscriptions")
             .accept(HttpStatusCode.OK)
             .body(typeInfo<List<SubscriptionDto>>())
 
+    // DELETE /user/subscriptions/:id
     suspend fun cancelSubscription(id: String) =
-        client.delete("subscriptions/$id")
+        client.delete("user/subscriptions/$id")
             .accept(HttpStatusCode.NoContent, HttpStatusCode.OK)
 }
