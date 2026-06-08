@@ -14,7 +14,7 @@ internal data class UpdateProfileRequest(
 )
 
 @Serializable
-internal data class UpdatePasswordRequest(
+data class UpdatePasswordRequest(
     val currentPassword: String,
     val newPassword: String
 )
@@ -25,7 +25,7 @@ internal data class UpdatePasswordRequest(
 // ---------------------------------------------------------------------------
 
 @Serializable
-internal data class UserDto(
+data class UserDto(
     val id: Int,
     val email: String,
     val firstName: String,

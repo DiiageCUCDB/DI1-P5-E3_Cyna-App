@@ -3,7 +3,7 @@ package com.cyna.app.data.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class ErrorResponse(
+data class ErrorResponse(
     val message: String? = null,
     val error: String? = null
 ) {
@@ -11,4 +11,4 @@ internal data class ErrorResponse(
 }
 
 @Serializable
-internal data class MessageResponse(val message: String)
+data class MessageResponse(val message: String)

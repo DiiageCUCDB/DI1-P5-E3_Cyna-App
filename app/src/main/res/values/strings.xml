@@ -1,3 +1,47 @@
 <resources>
-    <string name="app_name">app</string>
+    <string name="app_name">Cyna</string>
+
+    <!-- Auth - Login -->
+    <string name="login_title">Welcome Back</string>
+    <string name="login_subtitle">Enter your credentials to access your secure workspace.</string>
+    <string name="login_email_label">Email address</string>
+    <string name="login_email_placeholder">name@company.com</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_password_placeholder">••••••••</string>
+    <string name="login_button">Sign In</string>
+    <string name="login_no_account">Don\'t have an account? <font color="#2563EB">Create one</font></string>
+    <string name="login_forgot_password">Forgot password?</string>
+
+    <!-- Auth - Register -->
+    <string name="register_title">Create an Account</string>
+    <string name="register_subtitle">Join Cyna to start monitoring your infrastructure.</string>
+    <string name="register_name_label">Full Name</string>
+    <string name="register_name_placeholder">John Doe</string>
+    <string name="register_email_label">Work Email</string>
+    <string name="register_email_placeholder">john@company.com</string>
+    <string name="register_password_label">Password</string>
+    <string name="register_confirm_password_label">Confirm Password</string>
+    <string name="register_terms_accept">I agree to the <font color="#2563EB">Terms of Service</font> and <font color="#2563EB">Privacy Policy</font>.</string>
+    <string name="register_button">Get Started</string>
+    <string name="register_has_account">Already have an account? <font color="#2563EB">Sign in</font></string>
+
+    <!-- Layout - Header -->
+    <string name="header_search_hint">Search solutions…</string>
+    <string name="header_menu_account">My Account</string>
+    <string name="header_menu_logout">Sign Out</string>
+
+    <!-- Layout - Footer -->
+    <string name="footer_tagline">Next-gen cybersecurity solutions for modern enterprises.</string>
+    <string name="footer_col_company">Company</string>
+    <string name="footer_col_solutions">Solutions</string>
+    <string name="footer_col_support">Support</string>
+    <string name="footer_copyright">© 2026 Cyna Cybersecurity. All rights reserved.</string>
+
+    <!-- Errors -->
+    <string name="error_invalid_email">Please enter a valid email address.</string>
+    <string name="error_password_short">Password must be at least 8 characters.</string>
+    <string name="error_password_mismatch">Passwords do not match.</string>
+    <string name="error_terms_required">You must accept the terms to continue.</string>
+    <string name="register_full_name_label">Full Name</string>
+    <string name="register_full_name_placeholder">Your Name</string>
 </resources>

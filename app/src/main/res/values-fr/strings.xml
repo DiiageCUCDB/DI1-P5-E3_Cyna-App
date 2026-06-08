@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Cyna</string>
+    <string name="login_title">Connexion</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Mot de passe</string>
+    <string name="login_button">Se connecter</string>
+    <string name="login_no_account">Pas encore de compte ? S\'inscrire</string>
+    <string name="register_title">Inscription</string>
+    <string name="register_full_name">Nom complet</string>
+    <string name="register_confirm_password">Confirmer le mot de passe</string>
+    <string name="register_button">S\'inscrire</string>
+    <string name="register_has_account">Déjà un compte ? Se connecter</string>
+    <string name="auth_error_invalid_email">Format d\'email invalide</string>
+    <string name="auth_error_password_too_short">Le mot de passe doit faire au moins 6 caractères</string>
+    <string name="auth_error_passwords_mismatch">Les mots de passe ne correspondent pas</string>
+</resources>

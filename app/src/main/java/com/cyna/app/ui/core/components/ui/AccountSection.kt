@@ -22,8 +22,6 @@ fun AccountSection(
     val authRepository: AuthRepository = koinInject()
     val scope = rememberCoroutineScope()
 
-    // Derive the selected tab directly from the inner nav back stack —
-    // this is the single source of truth, no separate mutableStateOf needed.
     val backStackEntry by innerNav.currentBackStackEntryAsState()
     val currentTab = when (backStackEntry?.destination?.route) {
         "profile" -> NavTab.PROFILE
@@ -49,9 +47,8 @@ fun AccountSection(
                     scope.launch {
                         runCatching { authRepository.logout() }
                             .onSuccess {
-                                innerNav.navigate("orders") {
-                                    popUpTo(innerNav.graph.startDestinationId) { inclusive = true }
-                                }
+                                // Logic to navigate back to login would be handled by the outer NavHost
+                                // since it observes SessionManager.user
                             }
                     }
                 }
