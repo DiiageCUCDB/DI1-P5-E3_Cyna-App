@@ -10,13 +10,17 @@ data class LoginRequest(
 
 @Serializable
 data class RegisterRequest(
-    val fullName: String,
+    val firstName: String,
+    val lastName: String,
     val email: String,
     val password: String
 )
 
 @Serializable
-data class AuthResponse(
-    val user: UserDto,
-    val token: String
+data class UserDto(
+    val id: Int,
+    val email: String,
+    val firstName: String,
+    val lastName: String,
+    val role: String
 )

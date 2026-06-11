@@ -13,15 +13,16 @@ import com.cyna.app.ui.screens.profile.ProfileViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import org.koin.android.ext.koin.androidApplication
+import io.ktor.client.plugins.cookies.HttpCookies
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 
-private const val RMAPI_URL = " http://localhost:5104/"
+private const val RMAPI_URL = "https://10.0.2.2:7169/"
 
 /**
  * Koin dependency injection module for the application.
@@ -84,19 +85,16 @@ val appModule = module {
     // HTTP client
     // ------------------------------------------------------------------
     single<HttpClient> {
-        val sessionManager = get<SessionManager>()
-        createHttpClient(
-            baseUrl = RMAPI_URL,
-            engine  = get(),
-            vibrationHelper  = get()
-        ).config {
-            install(Auth) {
-                bearer {
-                    loadTokens {
-                        sessionManager.token.value?.let { BearerTokens(it, "") }
-                    }
-                }
+        HttpClient(get()) {
+            // Configuration globale (sérialisation JSON)
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    coerceInputValues = true
+                })
             }
+            // Gestion des cookies HttpOnly par Ktor
+            install(HttpCookies)
         }
     }
 
