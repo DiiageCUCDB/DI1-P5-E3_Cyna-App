@@ -2,46 +2,52 @@
     <string name="app_name">Cyna</string>
 
     <!-- Auth - Login -->
-    <string name="login_title">Welcome Back</string>
-    <string name="login_subtitle">Enter your credentials to access your secure workspace.</string>
-    <string name="login_email_label">Email address</string>
-    <string name="login_email_placeholder">name@company.com</string>
-    <string name="login_password_label">Password</string>
+    <string name="login_title">Bon retour</string>
+    <string name="login_subtitle_prefix">Ou </string>
+    <string name="login_subtitle_link">créez un compte gratuitement</string>
+    <string name="login_email_label">Adresse e-mail</string>
+    <string name="login_email_placeholder">vous@entreprise.com</string>
+    <string name="login_password_label">Mot de passe</string>
     <string name="login_password_placeholder">••••••••</string>
-    <string name="login_button">Sign In</string>
-    <string name="login_no_account">Don\'t have an account? <font color="#2563EB">Create one</font></string>
-    <string name="login_forgot_password">Forgot password?</string>
+    <string name="login_remember_me">Se souvenir de moi</string>
+    <string name="login_forgot_password">Mot de passe oublié ?</string>
+    <string name="login_button">Se connecter</string>
 
     <!-- Auth - Register -->
-    <string name="register_title">Create an Account</string>
-    <string name="register_subtitle">Join Cyna to start monitoring your infrastructure.</string>
-    <string name="register_name_label">Full Name</string>
-    <string name="register_name_placeholder">John Doe</string>
-    <string name="register_email_label">Work Email</string>
-    <string name="register_email_placeholder">john@company.com</string>
-    <string name="register_password_label">Password</string>
-    <string name="register_confirm_password_label">Confirm Password</string>
-    <string name="register_terms_accept">I agree to the <font color="#2563EB">Terms of Service</font> and <font color="#2563EB">Privacy Policy</font>.</string>
-    <string name="register_button">Get Started</string>
-    <string name="register_has_account">Already have an account? <font color="#2563EB">Sign in</font></string>
+    <string name="register_title">Créer un compte</string>
+    <string name="register_subtitle_prefix">Vous avez déjà un compte ? </string>
+    <string name="register_subtitle_link">Connectez-vous</string>
+    <string name="register_first_name_label">Prénom</string>
+    <string name="register_first_name_placeholder">John</string>
+    <string name="register_last_name_label">Nom</string>
+    <string name="register_last_name_placeholder">Doe</string>
+    <string name="register_email_label">Adresse e-mail</string>
+    <string name="register_email_placeholder">vous@entreprise.com</string>
+    <string name="register_password_label">Mot de passe</string>
+    <string name="register_button">S\'inscrire</string>
+    <string name="register_next_step_title">Étape suivante</string>
+    <string name="register_next_step_body">Après validation, un e-mail de confirmation vous sera envoyé pour activer votre compte de manière sécurisée.</string>
+
+    <!-- Password criteria -->
+    <string name="password_criteria_length">8 caractères minimum</string>
+    <string name="password_criteria_uppercase">Une majuscule</string>
+    <string name="password_criteria_digit">Un chiffre</string>
+    <string name="password_criteria_special">Un caractère spécial</string>
 
     <!-- Layout - Header -->
-    <string name="header_search_hint">Search solutions…</string>
-    <string name="header_menu_account">My Account</string>
-    <string name="header_menu_logout">Sign Out</string>
+    <string name="header_search_hint">Rechercher…</string>
+    <string name="header_menu_account">Mon compte</string>
+    <string name="header_menu_logout">Se déconnecter</string>
 
     <!-- Layout - Footer -->
-    <string name="footer_tagline">Next-gen cybersecurity solutions for modern enterprises.</string>
-    <string name="footer_col_company">Company</string>
+    <string name="footer_tagline">Solutions cybersécurité nouvelle génération pour les entreprises modernes.</string>
+    <string name="footer_col_company">Entreprise</string>
     <string name="footer_col_solutions">Solutions</string>
     <string name="footer_col_support">Support</string>
-    <string name="footer_copyright">© 2026 Cyna Cybersecurity. All rights reserved.</string>
+    <string name="footer_copyright">© 2026 Cyna Cybersécurité. Tous droits réservés.</string>
 
     <!-- Errors -->
-    <string name="error_invalid_email">Please enter a valid email address.</string>
-    <string name="error_password_short">Password must be at least 8 characters.</string>
-    <string name="error_password_mismatch">Passwords do not match.</string>
-    <string name="error_terms_required">You must accept the terms to continue.</string>
-    <string name="register_full_name_label">Full Name</string>
-    <string name="register_full_name_placeholder">Your Name</string>
+    <string name="error_invalid_email">Adresse e-mail invalide.</string>
+    <string name="error_password_short">Le mot de passe doit contenir au moins 8 caractères.</string>
+    <string name="error_field_required">Ce champ est obligatoire.</string>
 </resources>

@@ -10,7 +10,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 val authHandlers: List<MockHandler> = listOf(
 
-    // POST /auth/login → { token, refreshToken }
+    // POST /auth/login → { message }  (real API uses Set-Cookie for tokens)
     MockHandler(
         method = HttpMethod.Post,
         path = "/auth/login",
@@ -18,27 +18,22 @@ val authHandlers: List<MockHandler> = listOf(
             val json = body?.let { Json.parseToJsonElement(it).jsonObject }
             val email = json?.get("email")?.jsonPrimitive?.content ?: ""
             if (email == "error@example.com") error("Identifiants invalides.")
-            MockFactories.makeAuthResponse()
+            MessageResponse("Connexion réussie.")
         }
     ),
 
-    // POST /auth/register → { token, refreshToken }
+    // POST /auth/register → { message }
     MockHandler(
         method = HttpMethod.Post,
         path = "/auth/register",
-        resolver = { _, _ -> MockFactories.makeAuthResponse() }
+        resolver = { _, _ -> MessageResponse("Inscription réussie.") }
     ),
 
-    // POST /auth/refresh → { token, refreshToken }
+    // POST /auth/refresh → { message }
     MockHandler(
         method = HttpMethod.Post,
         path = "/auth/refresh",
-        resolver = { _, body ->
-            val json = body?.let { Json.parseToJsonElement(it).jsonObject }
-            val refreshToken = json?.get("refreshToken")?.jsonPrimitive?.content
-            if (refreshToken.isNullOrBlank()) error("Refresh token manquant.")
-            MockFactories.makeAuthResponse()
-        }
+        resolver = { _, _ -> MessageResponse("Rafraîchissement réussi.") }
     ),
 
     // POST /auth/logout

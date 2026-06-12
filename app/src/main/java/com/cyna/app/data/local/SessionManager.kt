@@ -8,6 +8,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+/**
+ * Gestionnaire de session utilisateur. Persiste les tokens JWT et le profil dans SharedPreferences
+ * et les expose comme [StateFlow] observables.
+ *
+ * La navigation est pilotée par [token] : `token != null` → utilisateur authentifié.
+ * Les cookies Ktor sont synchronisés avec ce gestionnaire via [com.cyna.app.data.remote.SessionManagerCookieStorage].
+ */
 class SessionManager(context: Context) {
     private val prefs = context.getSharedPreferences("cyna_prefs", Context.MODE_PRIVATE)
 
@@ -35,6 +42,7 @@ class SessionManager(context: Context) {
         }
     }
 
+    /** Persiste [token] et [refreshToken] en mémoire et dans SharedPreferences. */
     fun saveTokens(token: String, refreshToken: String) {
         _token.value = token
         _refreshToken.value = refreshToken
@@ -45,16 +53,19 @@ class SessionManager(context: Context) {
         }
     }
 
+    /** Persiste le profil utilisateur sérialisé en JSON dans SharedPreferences. */
     fun saveUser(user: UserDto) {
         _user.value = user
         prefs.edit().putString("user", Json.encodeToString(user)).apply()
     }
 
+    /** Raccourci combinant [saveTokens] et [saveUser] en une seule opération. */
     fun saveSession(user: UserDto, token: String, refreshToken: String) {
         saveTokens(token, refreshToken)
         saveUser(user)
     }
 
+    /** Efface tous les tokens et le profil — déclenche la navigation vers l'écran de connexion. */
     fun clearSession() {
         _user.value = null
         _token.value = null
@@ -67,5 +78,6 @@ class SessionManager(context: Context) {
         }
     }
 
+    /** Retourne `true` si un token de session est présent en mémoire. */
     fun isAuthenticated(): Boolean = _token.value != null
 }

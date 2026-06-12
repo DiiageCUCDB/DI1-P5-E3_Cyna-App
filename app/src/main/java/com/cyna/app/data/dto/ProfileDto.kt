@@ -25,7 +25,7 @@ data class UpdatePasswordRequest(
 // ---------------------------------------------------------------------------
 
 @Serializable
-data class UserDto(
+data class UserProfileDto(
     val id: Int,
     val email: String,
     val firstName: String,
