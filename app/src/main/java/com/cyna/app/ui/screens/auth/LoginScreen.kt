@@ -1,8 +1,9 @@
 package com.cyna.app.ui.screens.auth
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
@@ -21,7 +22,6 @@ import com.cyna.app.ui.core.components.ui.KLink
 import com.cyna.app.ui.core.components.ui.layout.MainScaffold
 import dev.kindling.compose.KScreen
 import dev.kindling.core.components.KButton
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
@@ -51,10 +51,13 @@ private fun LoginContent(
     onLogin: () -> Unit = {},
     onNavigateToRegister: () -> Unit = {}
 ) {
+    var rememberMe by remember { mutableStateOf(false) }
+
     MainScaffold(showLayout = false) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(vertical = 40.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -70,12 +73,19 @@ private fun LoginContent(
                     modifier = Modifier.padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    // Lock icon
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            modifier = Modifier.padding(12.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
 
                     Text(
                         text = stringResource(R.string.login_title),
@@ -84,14 +94,23 @@ private fun LoginContent(
                         textAlign = TextAlign.Center
                     )
 
-                    Text(
-                        text = stringResource(R.string.login_subtitle),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
-                    )
+                    // Subtitle with register link
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.login_subtitle_prefix),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        KLink(
+                            text = stringResource(R.string.login_subtitle_link),
+                            onClick = onNavigateToRegister
+                        )
+                    }
 
+                    // Email
                     FieldWithLabel(
                         label = stringResource(R.string.login_email_label),
                         value = state.email,
@@ -103,17 +122,16 @@ private fun LoginContent(
                     )
                     if (state.emailError != null) {
                         Text(
-                            text = state.emailError!!,
+                            text = state.emailError,
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier
-                                .align(Alignment.Start)
-                                .padding(top = 4.dp)
+                            modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Password
                     FieldWithLabel(
                         label = stringResource(R.string.login_password_label),
                         value = state.password,
@@ -126,22 +144,36 @@ private fun LoginContent(
                     )
                     if (state.passwordError != null) {
                         Text(
-                            text = state.passwordError!!,
+                            text = state.passwordError,
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier
-                                .align(Alignment.Start)
-                                .padding(top = 4.dp)
+                            modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
                         )
                     }
 
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
+                    // Remember me + forgot password
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = rememberMe,
+                                onCheckedChange = { rememberMe = it },
+                                enabled = !state.isLoading
+                            )
+                            Text(
+                                text = stringResource(R.string.login_remember_me),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
                         KLink(
                             text = stringResource(R.string.login_forgot_password),
-                            onClick = { /* Mock forgot password */ }
+                            onClick = {}
                         )
                     }
 
@@ -153,27 +185,6 @@ private fun LoginContent(
                         isLoading = state.isLoading,
                         modifier = Modifier.fillMaxWidth()
                     )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.login_no_account) + " ",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.register_button),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.clickable(onClick = onNavigateToRegister)
-                        )
-                    }
                 }
             }
         }

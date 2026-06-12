@@ -118,11 +118,11 @@ data class PaginatedProducts(
     val totalPages: Int,
 )
 
-// Auth response (interne)
+// Auth response — shape identique à AuthResultDto de l'API
 @Serializable
 data class MockAuthResponse(
     val token: String,
-    val user: MockUser,
+    val refreshToken: String,
 )
 
 // ---------------------------------------------------------------------------
@@ -213,9 +213,9 @@ object MockFactories {
         autoRenew          = Random.nextBoolean(),
     )
 
-    fun makeAuthResponse(user: MockUser = makeUser()) = MockAuthResponse(
-        token = "eyJ.${List(64) { ('a'..'z').random() }.joinToString("")}.mock",
-        user  = user,
+    fun makeAuthResponse() = MockAuthResponse(
+        token        = "eyJ.${List(64) { ('a'..'z').random() }.joinToString("")}.mock",
+        refreshToken = List(64) { (('a'..'z') + ('0'..'9')).random() }.joinToString(""),
     )
 
     fun <T> makeMany(n: Int, factory: () -> T): List<T> = (1..n).map { factory() }

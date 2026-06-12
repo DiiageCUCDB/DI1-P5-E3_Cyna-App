@@ -74,8 +74,8 @@ fun NavController.navigateTo(
 @Composable
 fun NavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     val sessionManager: SessionManager = koinInject()
-    val user by sessionManager.user.collectAsState()
-    val isAuthenticated = user != null
+    val token by sessionManager.token.collectAsState()
+    val isAuthenticated = token != null
 
     androidx.navigation.compose.NavHost(
         navController = navController,
@@ -98,8 +98,8 @@ fun NavHost(navController: NavHostController, modifier: Modifier = Modifier) {
                 navController = navController,
                 onNavigateToLogin = { navController.navigateTo(Destination.Login) },
                 onRegisterSuccess = {
-                    navController.navigateTo(Destination.OrdersHistory) {
-                        popUpTo(Destination.Login.route) { inclusive = true }
+                    navController.navigateTo(Destination.Login) {
+                        popUpTo(Destination.Register.route) { inclusive = true }
                     }
                 }
             )

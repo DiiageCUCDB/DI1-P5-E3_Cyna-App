@@ -1,8 +1,12 @@
 package com.cyna.app.ui.screens.auth
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.cyna.app.R
 import com.cyna.app.ui.core.components.ui.FieldWithLabel
+import com.cyna.app.ui.core.components.ui.KLink
 import com.cyna.app.ui.core.components.ui.layout.MainScaffold
 import dev.kindling.compose.KScreen
 import dev.kindling.core.components.KButton
@@ -31,11 +36,10 @@ fun RegisterScreen(
     ) { state, vm ->
         RegisterContent(
             state = state,
-            onFullNameChange = vm::onFullNameChange,
+            onFirstNameChange = vm::onFirstNameChange,
+            onLastNameChange = vm::onLastNameChange,
             onEmailChange = vm::onEmailChange,
             onPasswordChange = vm::onPasswordChange,
-            onConfirmPasswordChange = vm::onConfirmPasswordChange,
-            onAcceptTermsChange = vm::onAcceptTermsChange,
             onRegister = { vm.register(onRegisterSuccess) },
             onNavigateToLogin = onNavigateToLogin
         )
@@ -45,11 +49,10 @@ fun RegisterScreen(
 @Composable
 private fun RegisterContent(
     state: AuthContracts.UiState = AuthContracts.UiState(),
-    onFullNameChange: (String) -> Unit = {},
+    onFirstNameChange: (String) -> Unit = {},
+    onLastNameChange: (String) -> Unit = {},
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
-    onConfirmPasswordChange: (String) -> Unit = {},
-    onAcceptTermsChange: (Boolean) -> Unit = {},
     onRegister: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ) {
@@ -57,12 +60,13 @@ private fun RegisterContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(vertical = 40.dp),
             contentAlignment = Alignment.Center
         ) {
             Surface(
                 modifier = Modifier
-                    .widthIn(max = 450.dp)
+                    .widthIn(max = 500.dp)
                     .padding(horizontal = 24.dp),
                 shape = RoundedCornerShape(16.dp),
                 shadowElevation = 2.dp,
@@ -79,36 +83,70 @@ private fun RegisterContent(
                         textAlign = TextAlign.Center
                     )
 
-                    Text(
-                        text = stringResource(R.string.register_subtitle),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
-                    )
-
-                    FieldWithLabel(
-                        label = stringResource(R.string.register_name_label),
-                        value = state.fullName,
-                        onValueChange = onFullNameChange,
-                        placeholder = stringResource(R.string.register_name_placeholder),
-                        isError = state.fullNameError != null,
-                        enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    if (state.fullNameError != null) {
+                    // Subtitle with login link
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = state.fullNameError!!,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier
-                                .align(Alignment.Start)
-                                .padding(top = 4.dp)
+                            text = stringResource(R.string.register_subtitle_prefix),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        KLink(
+                            text = stringResource(R.string.register_subtitle_link),
+                            onClick = onNavigateToLogin
+                        )
+                    }
+
+                    // First name + Last name side by side
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            FieldWithLabel(
+                                label = stringResource(R.string.register_first_name_label),
+                                value = state.firstName,
+                                onValueChange = onFirstNameChange,
+                                placeholder = stringResource(R.string.register_first_name_placeholder),
+                                isError = state.firstNameError != null,
+                                enabled = !state.isLoading,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            if (state.firstNameError != null) {
+                                Text(
+                                    text = state.firstNameError,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            FieldWithLabel(
+                                label = stringResource(R.string.register_last_name_label),
+                                value = state.lastName,
+                                onValueChange = onLastNameChange,
+                                placeholder = stringResource(R.string.register_last_name_placeholder),
+                                isError = state.lastNameError != null,
+                                enabled = !state.isLoading,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            if (state.lastNameError != null) {
+                                Text(
+                                    text = state.lastNameError,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Email
                     FieldWithLabel(
                         label = stringResource(R.string.register_email_label),
                         value = state.email,
@@ -120,17 +158,16 @@ private fun RegisterContent(
                     )
                     if (state.emailError != null) {
                         Text(
-                            text = state.emailError!!,
+                            text = state.emailError,
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier
-                                .align(Alignment.Start)
-                                .padding(top = 4.dp)
+                            modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Password
                     FieldWithLabel(
                         label = stringResource(R.string.register_password_label),
                         value = state.password,
@@ -141,56 +178,10 @@ private fun RegisterContent(
                         enabled = !state.isLoading,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    if (state.passwordError != null) {
-                        Text(
-                            text = state.passwordError!!,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier
-                                .align(Alignment.Start)
-                                .padding(top = 4.dp)
-                        )
-                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    FieldWithLabel(
-                        label = stringResource(R.string.register_confirm_password_label),
-                        value = state.confirmPassword,
-                        onValueChange = onConfirmPasswordChange,
-                        placeholder = stringResource(R.string.login_password_placeholder),
-                        isPassword = true,
-                        isError = state.confirmPasswordError != null,
-                        enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    if (state.confirmPasswordError != null) {
-                        Text(
-                            text = state.confirmPasswordError!!,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier
-                                .align(Alignment.Start)
-                                .padding(top = 4.dp)
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
-                    ) {
-                        Checkbox(
-                            checked = state.acceptTerms,
-                            onCheckedChange = onAcceptTermsChange,
-                            enabled = !state.isLoading
-                        )
-                        Text(
-                            text = stringResource(R.string.register_terms_accept),
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
+                    // Password criteria checklist (visible dès qu'on tape)
+                    if (state.password.isNotEmpty()) {
+                        PasswordCriteria(state = state)
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -202,28 +193,67 @@ private fun RegisterContent(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Row(
+                    // "Étape suivante" info box
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
                     ) {
-                        Text(
-                            text = stringResource(R.string.register_has_account).split("?").first() + "? ",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(R.string.login_button),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.clickable(onClick = onNavigateToLogin)
-                        )
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = stringResource(R.string.register_next_step_title),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = stringResource(R.string.register_next_step_body),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PasswordCriteria(state: AuthContracts.UiState) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+    ) {
+        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            CriterionRow(stringResource(R.string.password_criteria_length), state.passwordHasMinLength)
+            CriterionRow(stringResource(R.string.password_criteria_uppercase), state.passwordHasUppercase)
+            CriterionRow(stringResource(R.string.password_criteria_digit), state.passwordHasDigit)
+            CriterionRow(stringResource(R.string.password_criteria_special), state.passwordHasSpecial)
+        }
+    }
+}
+
+@Composable
+private fun CriterionRow(label: String, met: Boolean) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Icon(
+            imageVector = if (met) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = if (met) MaterialTheme.colorScheme.primary
+                   else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = if (met) MaterialTheme.colorScheme.onSurface
+                    else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+        )
     }
 }
