@@ -13,7 +13,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 /**
- * Passerelle vers les endpoints `/auth/*` de l'API Cyna.
+ * Passerelle vers les endpoints d'authentification de l'API Cyna (`/auth/`).
  *
  * L'authentification est basée sur des cookies HTTP (`cyna_token`, `cyna_refresh_token`)
  * renvoyés par l'API via `Set-Cookie`. Les corps de réponse de login/register ne contiennent
