@@ -17,6 +17,17 @@ data class RegisterRequest(
 )
 
 @Serializable
+data class RefreshTokenRequest(
+    val refreshToken: String
+)
+
+@Serializable
+data class AuthResponse(
+    val token: String,
+    val refreshToken: String
+)
+
+@Serializable
 data class UserDto(
     val id: Int,
     val email: String,

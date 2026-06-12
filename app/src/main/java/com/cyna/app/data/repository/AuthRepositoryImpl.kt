@@ -14,25 +14,25 @@ internal class AuthRepositoryImpl(
 
     override suspend fun login(request: LoginRequest): AuthResponse {
         val response = authAPI.login(request)
-        sessionManager.saveSession(response.user, response.token)
+        // Save tokens first so the Auth plugin can inject them for the getCurrentUser call.
+        sessionManager.saveTokens(response.token, response.refreshToken)
+        val user = authAPI.getCurrentUser()
+        sessionManager.saveUser(user)
         return response
     }
 
     override suspend fun register(request: RegisterRequest): AuthResponse {
         val response = authAPI.register(request)
-        sessionManager.saveSession(response.user, response.token)
+        sessionManager.saveTokens(response.token, response.refreshToken)
+        val user = authAPI.getCurrentUser()
+        sessionManager.saveUser(user)
         return response
     }
 
-    /**
-     * Calls POST /auth/logout.
-     * [io.ktor.client.plugins.HttpCallValidator] fires the error toast before
-     * the exception surfaces here. On failure the exception propagates so the
-     * caller can decide not to end the session.
-     */
     override suspend fun logout() {
+        val refreshToken = sessionManager.refreshToken.value
         try {
-            authAPI.logout()
+            if (refreshToken != null) authAPI.logout(refreshToken)
         } finally {
             sessionManager.clearSession()
         }

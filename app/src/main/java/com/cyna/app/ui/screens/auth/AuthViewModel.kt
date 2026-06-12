@@ -107,8 +107,18 @@ class AuthViewModel(application: Application) :
             return
         }
 
+        val nameParts = s.fullName.trim().split(" ", limit = 2)
         fetchData(
-            source = { authRepository.register(RegisterRequest(s.fullName, s.email, s.password)) },
+            source = {
+                authRepository.register(
+                    RegisterRequest(
+                        firstName = nameParts[0],
+                        lastName  = nameParts.getOrElse(1) { "" },
+                        email     = s.email,
+                        password  = s.password
+                    )
+                )
+            },
             onResult = {
                 onSuccess {
                     updateState { copy(isLoading = false) }

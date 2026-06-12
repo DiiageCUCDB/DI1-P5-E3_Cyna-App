@@ -31,6 +31,11 @@ android {
             "MOCK_API",
             localProps.getProperty("MOCK_API", "false")
         )
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"${localProps.getProperty("BASE_URL", "https://api.staging.projet-cyna.fr/")}\""
+        )
     }
 
     buildTypes {
@@ -42,6 +47,7 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("boolean", "MOCK_API", "false")
+            buildConfigField("String", "BASE_URL", "\"https://api.projet-cyna.fr/\"")
         }
     }
     compileOptions {
