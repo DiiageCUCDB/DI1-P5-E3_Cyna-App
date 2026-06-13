@@ -1,0 +1,308 @@
+Index: app/src/main/java/com/cyna/app/di/AppModule.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.cyna.app.di\n\nimport com.cyna.app.BuildConfig\nimport com.cyna.app.data.remote.*\nimport com.cyna.app.data.repository.*\nimport com.cyna.app.domain.repository.*\nimport com.cyna.app.mock.registry.buildMockEngine\nimport io.ktor.client.HttpClient\nimport io.ktor.client.engine.HttpClientEngine\nimport io.ktor.client.engine.cio.CIO\nimport org.koin.dsl.module\n\nprivate const val RMAPI_URL = \" http://localhost:5104/\"\n\n/**\n * Koin dependency injection module for the application.\n *\n * This module defines all the dependencies that will be available for injection\n * throughout the application. It configures how dependencies are created and\n * their lifecycle (singleton, factory, etc.).\n* When [BuildConfig.MOCK_API] is `true` the Ktor client is backed by\n * [buildMockEngine], which intercepts every request and delegates to\n * [com.cyna.app.mock.registry.MockRegistry] — no network required.\n *\n * ## Usage\n * This module should be loaded when initializing the Koin container in the application.\n *\n * ## Dependencies Included\n * - [AuthRepository] as singleton using [AuthRepositoryImpl] implementation\n *\n * @see org.koin.dsl.module\n * @see single\n * @see org.koin.plugin.module.dsl.factory\n *\n * @sample\n * // Initialize Koin with this module\n * startKoin {\n *     modules(appModule)\n * }\n* To enable mock mode add to your `local.properties`:\n * ```\n * MOCK_API=true\n * ```\n * and expose it in `build.gradle.kts`:\n * ```kotlin\n * buildConfigField(\"boolean\", \"MOCK_API\",\n *     properties[\"MOCK_API\"]?.toString() ?: \"false\")\n * ```\n */\nval appModule = module {\n    // ------------------------------------------------------------------\n    // Engine — real (CIO) or mock, selected at compile-time flag\n    // ------------------------------------------------------------------\n    single<HttpClientEngine> {\n        if (BuildConfig.MOCK_API) {\n            buildMockEngine(delayMs = 400L)   // simulates ~400 ms latency\n        } else {\n            CIO.create()\n        }\n    }\n\n    // ------------------------------------------------------------------\n    // HTTP client — same factory, different engine\n    // ------------------------------------------------------------------\n    single<HttpClient> {\n        createHttpClient(\n            baseUrl = RMAPI_URL,\n            engine  = get()\n        )\n    }\n\n    // ------------------------------------------------------------------\n    // API + Repository layer\n    // ------------------------------------------------------------------\n    // ── Remote API layer ──────────────────────────────────────────────────────\n    single { AuthAPI(get()) }\n    single { UserAPI(get()) }\n    single { OrderHistoryAPI(get()) }\n\n    // ── Repository layer ──────────────────────────────────────────────────────\n    single<AuthRepository>         { AuthRepositoryImpl(get()) }\n    single<UserRepository>   { UserRepositoryImpl(get()) }\n    single<OrderHistoryRepository>  { OrderHistoryRepositoryImpl(get()) }\n\n\n    // Add other dependencies here as needed\n    // single { YourRepository() }\n    // factory { YourUseCase() } // new instance each time\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/cyna/app/di/AppModule.kt b/app/src/main/java/com/cyna/app/di/AppModule.kt
+--- a/app/src/main/java/com/cyna/app/di/AppModule.kt	(revision 077e6f0acd299bf5547bcd6920cd8c1a347a2234)
++++ b/app/src/main/java/com/cyna/app/di/AppModule.kt	(date 1781005849628)
+@@ -3,11 +3,13 @@
+ import com.cyna.app.BuildConfig
+ import com.cyna.app.data.remote.*
+ import com.cyna.app.data.repository.*
++import com.cyna.app.data.util.*
+ import com.cyna.app.domain.repository.*
+ import com.cyna.app.mock.registry.buildMockEngine
+ import io.ktor.client.HttpClient
+ import io.ktor.client.engine.HttpClientEngine
+ import io.ktor.client.engine.cio.CIO
++import org.koin.android.ext.koin.androidContext
+ import org.koin.dsl.module
+ 
+ private const val RMAPI_URL = " http://localhost:5104/"
+@@ -48,6 +50,11 @@
+  * ```
+  */
+ val appModule = module {
++    // ------------------------------------------------------------------
++    // Utilitaires Android
++    // ------------------------------------------------------------------
++    single { VibrationHelper(androidContext()) }
++
+     // ------------------------------------------------------------------
+     // Engine — real (CIO) or mock, selected at compile-time flag
+     // ------------------------------------------------------------------
+@@ -65,7 +72,8 @@
+     single<HttpClient> {
+         createHttpClient(
+             baseUrl = RMAPI_URL,
+-            engine  = get()
++            engine  = get(),
++            vibrationHelper  = get()
+         )
+     }
+ 
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\">\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n\n    <application\n        android:name=\".Application\"\n        android:allowBackup=\"true\"\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\n        android:fullBackupContent=\"@xml/backup_rules\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\n        android:supportsRtl=\"true\"\n        android:theme=\"@style/Theme.app\">\n        <activity\n            android:name=\".MainActivity\"\n            android:exported=\"true\"\n            android:theme=\"@style/Theme.app\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n    </application>\n\n</manifest>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 077e6f0acd299bf5547bcd6920cd8c1a347a2234)
++++ b/app/src/main/AndroidManifest.xml	(date 1781005976905)
+@@ -2,6 +2,7 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools">
+     <uses-permission android:name="android.permission.INTERNET" />
++    <uses-permission android:name="android.permission.VIBRATE" />
+ 
+     <application
+         android:name=".Application"
+Index: app/src/main/java/com/cyna/app/data/remote/HttpClient.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.cyna.app.data.remote\n\nimport com.cyna.app.data.dto.ErrorResponse\nimport io.ktor.client.HttpClient\nimport io.ktor.client.engine.HttpClientEngine\nimport io.ktor.client.engine.cio.CIO\nimport io.ktor.client.plugins.HttpCallValidator\nimport io.ktor.client.plugins.HttpTimeout\nimport io.ktor.client.plugins.contentnegotiation.ContentNegotiation\nimport io.ktor.client.plugins.defaultRequest\nimport io.ktor.client.plugins.logging.LogLevel\nimport io.ktor.client.plugins.logging.Logger\nimport io.ktor.client.plugins.logging.Logging\nimport io.ktor.client.request.HttpRequestBuilder\nimport io.ktor.client.request.setBody\nimport io.ktor.client.statement.HttpResponse\nimport io.ktor.http.ContentType\nimport io.ktor.http.HttpStatusCode\nimport io.ktor.http.contentType\nimport io.ktor.serialization.kotlinx.json.*\nimport dev.kindling.core.components.KToastManager\nimport io.ktor.client.call.body\nimport io.ktor.client.statement.bodyAsText\n\nfun createHttpClient(\n    baseUrl: String,\n    engine: HttpClientEngine = CIO.create()\n): HttpClient = HttpClient(engine) {\n    defaultRequest {\n        url(baseUrl)\n    }\n\n    install(ContentNegotiation) {\n        json()\n    }\n\n    install(HttpTimeout) {\n        connectTimeoutMillis = 15000\n        socketTimeoutMillis = 15000\n        requestTimeoutMillis = 15000\n    }\n\n    install(Logging) {\n        logger = object : Logger {\n            override fun log(message: String) {\n                println(\"HTTP Client: $message\")\n            }\n        }\n        level = LogLevel.ALL\n    }\n\n    install(HttpCallValidator) {\n        validateResponse { response ->\n            val status = response.status.value\n            when {\n                status == 200 -> Unit // OK, do nothing\n\n                status in 400..499 -> {\n                    val msg = runCatching { response.body<ErrorResponse>().text }\n                        .recoverCatching { response.bodyAsText().take(200) }\n                        .getOrDefault(\"No details provided\")\n                    KToastManager.warning(\"Client error ($status)\", msg)\n                    throw HttpException.ClientError(status, msg)\n                }\n\n                status in 500..599 -> {\n                    val msg = runCatching { response.body<ErrorResponse>().text }\n                        .recoverCatching { response.bodyAsText().take(200) }\n                        .getOrDefault(\"No details provided\")\n                    KToastManager.error(\"Server error ($status)\", msg)\n                    throw HttpException.ServerError(status, msg)\n                }\n            }\n        }\n\n        handleResponseExceptionWithRequest { exception, _ ->\n            if (exception is HttpException) return@handleResponseExceptionWithRequest // already handled above\n            KToastManager.error(\"Network error\", exception.message ?: \"No details provided\")\n        }\n    }\n}\n\ninline fun <reified T> HttpRequestBuilder.setBodyJson(body: T) {\n    contentType(ContentType.Application.Json)\n    setBody(body)\n}\n\nfun HttpResponse.accept(vararg codes: HttpStatusCode) = apply {\n    println(\"Checking response status: $status, accepted codes: ${codes.joinToString()}\")\n    if (status !in codes) {\n        val message = \"Unexpected status: HTTP $status\"\n        val description = \"Expected: ${codes.joinToString()}\"\n        KToastManager.warning(message, description)\n        throw HttpException.NotAccepted(\"$message. $description\")\n    }\n}\n\nsealed class HttpException(message: String) : Exception(message) {\n    class NotAccepted(message: String) : HttpException(message)\n    class ClientError(val statusCode: Int, message: String) : HttpException(message)\n    class ServerError(val statusCode: Int, message: String) : HttpException(message)\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/cyna/app/data/remote/HttpClient.kt b/app/src/main/java/com/cyna/app/data/remote/HttpClient.kt
+--- a/app/src/main/java/com/cyna/app/data/remote/HttpClient.kt	(revision 077e6f0acd299bf5547bcd6920cd8c1a347a2234)
++++ b/app/src/main/java/com/cyna/app/data/remote/HttpClient.kt	(date 1781005910828)
+@@ -1,7 +1,10 @@
+ package com.cyna.app.data.remote
+ 
+ import com.cyna.app.data.dto.ErrorResponse
++import com.cyna.app.data.util.VibrationHelper
++import dev.kindling.core.components.KToastManager
+ import io.ktor.client.HttpClient
++import io.ktor.client.call.body
+ import io.ktor.client.engine.HttpClientEngine
+ import io.ktor.client.engine.cio.CIO
+ import io.ktor.client.plugins.HttpCallValidator
+@@ -14,89 +17,93 @@
+ import io.ktor.client.request.HttpRequestBuilder
+ import io.ktor.client.request.setBody
+ import io.ktor.client.statement.HttpResponse
++import io.ktor.client.statement.bodyAsText
+ import io.ktor.http.ContentType
+ import io.ktor.http.HttpStatusCode
+ import io.ktor.http.contentType
+-import io.ktor.serialization.kotlinx.json.*
+-import dev.kindling.core.components.KToastManager
+-import io.ktor.client.call.body
+-import io.ktor.client.statement.bodyAsText
++import io.ktor.serialization.kotlinx.json.json
+ 
+ fun createHttpClient(
+     baseUrl: String,
+-    engine: HttpClientEngine = CIO.create()
++    engine: HttpClientEngine = CIO.create(),
++    vibrationHelper: VibrationHelper? = null   // null = mode preview/test sans contexte Android
+ ): HttpClient = HttpClient(engine) {
+-    defaultRequest {
+-        url(baseUrl)
+-    }
+ 
+-    install(ContentNegotiation) {
+-        json()
+-    }
++    defaultRequest { url(baseUrl) }
++
++    install(ContentNegotiation) { json() }
+ 
+     install(HttpTimeout) {
+-        connectTimeoutMillis = 15000
+-        socketTimeoutMillis = 15000
+-        requestTimeoutMillis = 15000
++        connectTimeoutMillis = 15_000
++        socketTimeoutMillis  = 15_000
++        requestTimeoutMillis = 15_000
+     }
+ 
+     install(Logging) {
+         logger = object : Logger {
+-            override fun log(message: String) {
+-                println("HTTP Client: $message")
+-            }
++            override fun log(message: String) { println("HTTP Client: $message") }
+         }
+         level = LogLevel.ALL
+     }
+ 
+     install(HttpCallValidator) {
++
+         validateResponse { response ->
+             val status = response.status.value
+             when {
+-                status == 200 -> Unit // OK, do nothing
++                status == 200 -> Unit
+ 
++                // 4xx — erreur client : vibration warning (impulsion modérée)
+                 status in 400..499 -> {
+                     val msg = runCatching { response.body<ErrorResponse>().text }
+                         .recoverCatching { response.bodyAsText().take(200) }
+                         .getOrDefault("No details provided")
++                    vibrationHelper?.warning()
+                     KToastManager.warning("Client error ($status)", msg)
+                     throw HttpException.ClientError(status, msg)
+                 }
+ 
++                // 5xx — erreur serveur : vibration error (double impulsion forte)
+                 status in 500..599 -> {
+                     val msg = runCatching { response.body<ErrorResponse>().text }
+                         .recoverCatching { response.bodyAsText().take(200) }
+                         .getOrDefault("No details provided")
++                    vibrationHelper?.error()
+                     KToastManager.error("Server error ($status)", msg)
+                     throw HttpException.ServerError(status, msg)
+                 }
+             }
+         }
+ 
++        // Erreur réseau (timeout, DNS, connexion refusée) : vibration error
+         handleResponseExceptionWithRequest { exception, _ ->
+-            if (exception is HttpException) return@handleResponseExceptionWithRequest // already handled above
++            if (exception is HttpException) return@handleResponseExceptionWithRequest
++            vibrationHelper?.error()
+             KToastManager.error("Network error", exception.message ?: "No details provided")
+         }
+     }
+ }
+ 
++// ── Helpers ───────────────────────────────────────────────────────────────────
++
+ inline fun <reified T> HttpRequestBuilder.setBodyJson(body: T) {
+     contentType(ContentType.Application.Json)
+     setBody(body)
+ }
+ 
+ fun HttpResponse.accept(vararg codes: HttpStatusCode) = apply {
+-    println("Checking response status: $status, accepted codes: ${codes.joinToString()}")
+     if (status !in codes) {
+-        val message = "Unexpected status: HTTP $status"
++        val message     = "Unexpected status: HTTP $status"
+         val description = "Expected: ${codes.joinToString()}"
+         KToastManager.warning(message, description)
+         throw HttpException.NotAccepted("$message. $description")
+     }
+ }
+ 
++// ── Exceptions ────────────────────────────────────────────────────────────────
++
+ sealed class HttpException(message: String) : Exception(message) {
+-    class NotAccepted(message: String) : HttpException(message)
+-    class ClientError(val statusCode: Int, message: String) : HttpException(message)
+-    class ServerError(val statusCode: Int, message: String) : HttpException(message)
++    class NotAccepted(message: String)                         : HttpException(message)
++    class ClientError(val statusCode: Int, message: String)    : HttpException(message)
++    class ServerError(val statusCode: Int, message: String)    : HttpException(message)
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/cyna/app/data/util/VibrationHelper.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/cyna/app/data/util/VibrationHelper.kt b/app/src/main/java/com/cyna/app/data/util/VibrationHelper.kt
+new file mode 100644
+--- /dev/null	(date 1781005759898)
++++ b/app/src/main/java/com/cyna/app/data/util/VibrationHelper.kt	(date 1781005759898)
+@@ -0,0 +1,94 @@
++package com.cyna.app.data.util
++
++import android.Manifest
++import android.content.Context
++import android.os.Build
++import android.os.VibrationEffect
++import android.os.Vibrator
++import android.os.VibratorManager
++import androidx.annotation.RequiresPermission
++
++/**
++ * Helper de vibration centralisé.
++ *
++ * Fournit des patterns semantiques alignés avec les états UI :
++ * - [error]   → double impulsion courte/forte  (erreur serveur, réseau)
++ * - [warning] → impulsion unique modérée        (erreur client 4xx)
++ * - [success] → impulsion douce courte          (opération réussie)
++ * - [light]   → tick léger                      (feedback UI générique)
++ *
++ * Utilisation :
++ * ```kotlin
++ * val vibrationHelper: VibrationHelper by inject()
++ * vibrationHelper.error()
++ * ```
++ */
++class VibrationHelper(context: Context) {
++
++    private val vibrator: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
++        val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
++        manager.defaultVibrator
++    } else {
++        @Suppress("DEPRECATION")
++        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
++    }
++
++    // ── Public API ────────────────────────────────────────────────────────────
++
++    /** Double impulsion courte/forte — erreur serveur (5xx) ou réseau. */
++    @RequiresPermission(Manifest.permission.VIBRATE)
++    fun error() = vibratePattern(
++        timings    = longArrayOf(0, 80, 60, 80),
++        amplitudes = intArrayOf(0, 220, 0, 220),
++        fallbackMs = 80L
++    )
++
++    /** Impulsion unique modérée — erreur client (4xx). */
++    @RequiresPermission(Manifest.permission.VIBRATE)
++    fun warning() = vibratePattern(
++        timings    = longArrayOf(0, 120),
++        amplitudes = intArrayOf(0, 160),
++        fallbackMs = 120L
++    )
++
++    /** Impulsion douce courte — succès d'une opération. */
++    @RequiresPermission(Manifest.permission.VIBRATE)
++    fun success() = vibratePattern(
++        timings    = longArrayOf(0, 60),
++        amplitudes = intArrayOf(0, 100),
++        fallbackMs = 60L
++    )
++
++    /** Tick léger — feedback générique. */
++    @RequiresPermission(Manifest.permission.VIBRATE)
++    fun light() = vibratePattern(
++        timings    = longArrayOf(0, 30),
++        amplitudes = intArrayOf(0, 60),
++        fallbackMs = 30L
++    )
++
++    // ── Internal ──────────────────────────────────────────────────────────────
++
++    @RequiresPermission(Manifest.permission.VIBRATE)
++    private fun vibratePattern(
++        timings: LongArray,
++        amplitudes: IntArray,
++        fallbackMs: Long
++    ) {
++        if (!vibrator.hasVibrator()) return
++
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            val effect = if (vibrator.hasAmplitudeControl()) {
++                VibrationEffect.createWaveform(timings, amplitudes, -1)
++            } else {
++                // Appareil sans contrôle d'amplitude : impulsion simple
++                VibrationEffect.createOneShot(fallbackMs, VibrationEffect.DEFAULT_AMPLITUDE)
++            }
++            vibrator.vibrate(effect)
++        } else {
++            @Suppress("DEPRECATION")
++            vibrator.vibrate(fallbackMs)
++        }
++    }
++}
++

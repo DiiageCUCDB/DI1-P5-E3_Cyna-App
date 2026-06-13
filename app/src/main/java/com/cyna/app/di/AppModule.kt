@@ -1,6 +1,7 @@
 package com.cyna.app.di
 
 import com.cyna.app.BuildConfig
+import com.cyna.app.data.local.SessionManager
 import com.cyna.app.data.remote.*
 import com.cyna.app.data.repository.*
 import com.cyna.app.data.util.*
@@ -9,89 +10,73 @@ import com.cyna.app.mock.registry.buildMockEngine
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 
-private const val RMAPI_URL = " http://localhost:5104/"
-
-/**
- * Koin dependency injection module for the application.
- *
- * This module defines all the dependencies that will be available for injection
- * throughout the application. It configures how dependencies are created and
- * their lifecycle (singleton, factory, etc.).
-* When [BuildConfig.MOCK_API] is `true` the Ktor client is backed by
- * [buildMockEngine], which intercepts every request and delegates to
- * [com.cyna.app.mock.registry.MockRegistry] — no network required.
- *
- * ## Usage
- * This module should be loaded when initializing the Koin container in the application.
- *
- * ## Dependencies Included
- * - [AuthRepository] as singleton using [AuthRepositoryImpl] implementation
- *
- * @see org.koin.dsl.module
- * @see single
- * @see org.koin.plugin.module.dsl.factory
- *
- * @sample
- * // Initialize Koin with this module
- * startKoin {
- *     modules(appModule)
- * }
-* To enable mock mode add to your `local.properties`:
- * ```
- * MOCK_API=true
- * ```
- * and expose it in `build.gradle.kts`:
- * ```kotlin
- * buildConfigField("boolean", "MOCK_API",
- *     properties["MOCK_API"]?.toString() ?: "false")
- * ```
- */
 val appModule = module {
-    // ------------------------------------------------------------------
-    // Utilitaires Android
-    // ------------------------------------------------------------------
+
+    single { SessionManager(androidContext()) }
+
     single { VibrationHelper(androidContext()) }
 
-    // ------------------------------------------------------------------
-    // Engine — real (CIO) or mock, selected at compile-time flag
-    // ------------------------------------------------------------------
+    /**
+     * Sélection du moteur HTTP selon l'environnement :
+     * - `MOCK_API=true` → [buildMockEngine] (pas de réseau, réponses en mémoire).
+     * - `DEBUG=true`    → OkHttp avec SSL bypass total (nécessaire pour l'émulateur Android
+     *                     qui expose l'API locale via `10.0.2.2` avec un certificat auto-signé).
+     *                     CIO ne permet pas de court-circuiter la vérification d'hostname.
+     * - Production      → CIO (moteur Kotlin natif, pas de dépendance OkHttp).
+     */
     single<HttpClientEngine> {
-        if (BuildConfig.MOCK_API) {
-            buildMockEngine(delayMs = 400L)   // simulates ~400 ms latency
-        } else {
-            CIO.create()
+        when {
+            BuildConfig.MOCK_API -> buildMockEngine(delayMs = 400L)
+
+            // Debug: OkHttp engine with all-trusting SSL + hostname verifier disabled.
+            // CIO does its own hostname check that can't be bypassed via trust manager alone.
+            BuildConfig.DEBUG -> {
+                val tm = trustAllTrustManager()
+                val sslContext = SSLContext.getInstance("TLS").apply {
+                    init(null, arrayOf(tm), SecureRandom())
+                }
+                OkHttp.create {
+                    preconfigured = OkHttpClient.Builder()
+                        .sslSocketFactory(sslContext.socketFactory, tm)
+                        .hostnameVerifier { _, _ -> true }
+                        .build()
+                }
+            }
+
+            else -> CIO.create()
         }
     }
 
-    // ------------------------------------------------------------------
-    // HTTP client — same factory, different engine
-    // ------------------------------------------------------------------
     single<HttpClient> {
         createHttpClient(
-            baseUrl = RMAPI_URL,
-            engine  = get(),
-            vibrationHelper  = get()
+            baseUrl = BuildConfig.BASE_URL,
+            engine = get(),
+            vibrationHelper = get(),
+            sessionManager = get()
         )
     }
 
-    // ------------------------------------------------------------------
-    // API + Repository layer
-    // ------------------------------------------------------------------
-    // ── Remote API layer ──────────────────────────────────────────────────────
     single { AuthAPI(get()) }
     single { UserAPI(get()) }
     single { OrderHistoryAPI(get()) }
 
-    // ── Repository layer ──────────────────────────────────────────────────────
-    single<AuthRepository>         { AuthRepositoryImpl(get()) }
-    single<UserRepository>   { UserRepositoryImpl(get()) }
-    single<OrderHistoryRepository>  { OrderHistoryRepositoryImpl(get()) }
+    single<AuthRepository>        { AuthRepositoryImpl(get(), get(), get()) }
+    single<UserRepository>        { UserRepositoryImpl(get()) }
+    single<OrderHistoryRepository> { OrderHistoryRepositoryImpl(get()) }
+}
 
-
-    // Add other dependencies here as needed
-    // single { YourRepository() }
-    // factory { YourUseCase() } // new instance each time
+/** Accepts any certificate — debug builds only. */
+private fun trustAllTrustManager(): X509TrustManager = object : X509TrustManager {
+    override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) = Unit
+    override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) = Unit
+    override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
 }

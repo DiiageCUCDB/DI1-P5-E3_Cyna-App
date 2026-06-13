@@ -2,12 +2,15 @@
 
 ## Vue d'ensemble
 
-Le projet utilise **Koin 3.5** pour l'injection de dépendances. Koin est un framework léger, sans génération de code (pas d'annotation processing), adapté à Kotlin et Compose.
+Le projet utilise **Koin 4.2.1** pour l'injection de dépendances. Koin est un framework léger, sans génération de code (pas d'annotation processing), adapté à Kotlin et Compose.
 
 ```
 Application.onCreate()
     └── startKoin { modules(appModule) }
             └── AppModule.kt
+                    ├── SessionManager (singleton)
+                    ├── VibrationHelper (singleton)
+                    ├── HttpClientEngine (singleton — moteur selon BuildConfig)
                     ├── HttpClient (singleton)
                     ├── XxxAPI (singleton)
                     └── XxxRepository (singleton)
@@ -38,27 +41,53 @@ class Application : Application() {
 
 ## Module principal — AppModule
 
-Toutes les dépendances sont déclarées dans `di/AppModule.kt` :
+Toutes les dépendances sont déclarées dans `di/AppModule.kt`. L'URL de base et le comportement du moteur sont contrôlés par `BuildConfig` (valeurs lues depuis `local.properties`) :
 
 ```kotlin
-private const val API_URL = "http://your-backend.com/api/"
-
 val appModule = module {
+
+    // Session & helpers
+    single { SessionManager(androidContext()) }
+    single { VibrationHelper(androidContext()) }
+
+    // Moteur HTTP — sélectionné selon l'environnement
+    single<HttpClientEngine> {
+        when {
+            BuildConfig.MOCK_API -> buildMockEngine(delayMs = 400L)
+            BuildConfig.DEBUG    -> OkHttp.create { } // SSL bypass — voir AppModule.kt
+            else                 -> CIO.create()
+        }
+    }
 
     // HttpClient — singleton partagé par toutes les APIs
     single<HttpClient> {
-        createHttpClient(baseUrl = API_URL)
+        createHttpClient(
+            baseUrl       = BuildConfig.BASE_URL,
+            engine        = get(),
+            vibrationHelper = get(),
+            sessionManager  = get()
+        )
     }
 
     // APIs réseau
-    single { LoginAPI(get()) }
-    single { ProductAPI(get()) }
+    single { AuthAPI(get()) }
+    single { UserAPI(get()) }
+    single { OrderHistoryAPI(get()) }
 
     // Repositories
-    single<LoginRepository>   { LoginRepositoryImpl(get()) }
-    single<ProductRepository> { ProductRepositoryImpl(get()) }
+    single<AuthRepository>         { AuthRepositoryImpl(get(), get(), get()) }
+    single<UserRepository>         { UserRepositoryImpl(get()) }
+    single<OrderHistoryRepository> { OrderHistoryRepositoryImpl(get()) }
 }
 ```
+
+### SessionManager
+
+`SessionManager` stocke les tokens JWT et le profil utilisateur dans `SharedPreferences ("cyna_prefs")`. Il est injecté dans :
+- `createHttpClient()` pour alimenter `SessionManagerCookieStorage`
+- `AuthRepositoryImpl` pour le mock fallback et le chargement du profil
+- `AuthViewModel` pour accéder à l'état de session
+- `Navigation.kt` pour piloter la navigation (token présent → écran principal)
 
 ---
 
@@ -156,7 +185,7 @@ val appModule = module {
 
 ```kotlin
 class NotificationViewModel(application: Application)
-    : ViewModel<NotificationContracts.UiState>(...) {
+    : ViewModel<NotificationContracts.UiState>(NotificationContracts.UiState(), application) {
 
     private val repository: NotificationRepository by inject()
 }

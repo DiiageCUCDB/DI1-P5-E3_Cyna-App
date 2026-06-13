@@ -22,41 +22,34 @@ Le client est créé par `createHttpClient()` dans `data/remote/HttpClient.kt` :
 ```kotlin
 fun createHttpClient(
     baseUrl: String,
-    engine: HttpClientEngine = CIO.create()
-): HttpClient = HttpClient(engine) {
-    // URL de base appliquée à toutes les requêtes
-    defaultRequest { url(baseUrl) }
-
-    // Désérialisation JSON via kotlinx.serialization
-    install(ContentNegotiation) { json() }
-
-    // Timeouts réseau
-    install(HttpTimeout) {
-        connectTimeoutMillis = 15000
-        socketTimeoutMillis  = 15000
-        requestTimeoutMillis = 15000
-    }
-
-    // Logs détaillés (désactiver en production)
-    install(Logging) { level = LogLevel.ALL }
-
-    // Normalisation des erreurs HTTP
-    install(HttpCallValidator) {
-        validateResponse { response ->
-            when (response.status.value) {
-                in 400..499 -> throw HttpException.ClientError(response.status.value, ...)
-                in 500..599 -> throw HttpException.ServerError(response.status.value, ...)
-            }
-        }
-    }
-}
+    engine: HttpClientEngine = CIO.create(),
+    vibrationHelper: VibrationHelper? = null,
+    sessionManager: SessionManager? = null
+): HttpClient
 ```
+
+Plugins installés :
+
+| Plugin | Rôle |
+|--------|------|
+| `ContentNegotiation` | Sérialisation/désérialisation JSON via `kotlinx.serialization` (`ignoreUnknownKeys = true`) |
+| `HttpTimeout` | Timeout global de 15 s (connect, socket, request) |
+| `Logging` | Logs complets de toutes les requêtes/réponses (`LogLevel.ALL`) |
+| `HttpCallValidator` | Normalisation des erreurs HTTP (voir section Gestion des erreurs) |
+| `HttpCookies` | Auth par cookie — activé uniquement si `sessionManager != null` |
 
 Le client est enregistré comme singleton dans Koin :
 
 ```kotlin
 // di/AppModule.kt
-single<HttpClient> { createHttpClient(baseUrl = API_URL) }
+single<HttpClient> {
+    createHttpClient(
+        baseUrl = BuildConfig.BASE_URL,
+        engine = get(),
+        vibrationHelper = get(),
+        sessionManager = get()
+    )
+}
 ```
 
 ---
@@ -183,22 +176,39 @@ fetchData(
 
 ---
 
-## Authentification
+## Authentification par cookie
 
-Pour les routes authentifiées, ajouter un intercepteur dans `createHttpClient()` :
+L'API Cyna utilise des **cookies HTTP** plutôt que des tokens `Authorization: Bearer`.
 
-```kotlin
-// Dans HttpClient.kt — à implémenter quand l'auth est disponible
-defaultRequest {
-    url(baseUrl)
-    val token = tokenStore.getToken()  // ex. DataStore ou SharedPreferences
-    if (token != null) {
-        header(HttpHeaders.Authorization, "Bearer $token")
-    }
-}
+Après un `POST /auth/login` réussi, l'API renvoie :
+```
+Set-Cookie: cyna_token=<jwt>; HttpOnly
+Set-Cookie: cyna_refresh_token=<jwt>; HttpOnly
 ```
 
-Le token doit être stocké dans une couche dédiée (ex. `data/local/TokenStore.kt`) injectée dans le client.
+Le plugin `HttpCookies` de Ktor intercepte ces `Set-Cookie` et les passe à `SessionManagerCookieStorage`, qui les persiste dans `SharedPreferences` via `SessionManager`. Sur chaque requête suivante, Ktor rappelle `SessionManagerCookieStorage.get()` pour récupérer les cookies à envoyer.
+
+```
+POST /auth/login
+  └── response Set-Cookie → SessionManagerCookieStorage.addCookie()
+                                 └── SessionManager.saveTokens()
+
+Requête protégée (ex. GET /auth/me)
+  └── SessionManagerCookieStorage.get() → Cookie: cyna_token=...
+```
+
+### Gestion des 401
+
+| Contexte | Comportement |
+|----------|--------------|
+| 401 sur `/auth/login` ou `/auth/register` | Toast "Connexion échouée" + message API — session non touchée |
+| 401 sur toute autre route | `SessionManager.clearSession()` + toast "Session expirée" → navigation vers Login |
+
+### Mode mock
+
+Le `MockEngine` n'émet pas de `Set-Cookie`. Pour que la navigation fonctionne en mock, `AuthRepositoryImpl.login()` injecte un token fictif si `SessionManager.token` est encore vide après le login.
+
+Voir [docs/Authentification.md](Authentification.md) pour la documentation complète.
 
 ---
 

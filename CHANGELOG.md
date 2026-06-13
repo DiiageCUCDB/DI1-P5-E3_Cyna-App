@@ -1,10 +1,3 @@
-# [1.1.0](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/compare/v1.0.0...v1.1.0) (2026-06-09)
-
-
-### Features
-
-* Add VibrationHelper for UI feedback and integrate into HTTP client error handling ([6a0fd76](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/6a0fd763460f8be36e0cadf7e48e48cc1fa9a67e))
-
 # 1.0.0 (2026-06-08)
 
 
