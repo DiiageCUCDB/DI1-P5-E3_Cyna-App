@@ -1,3 +1,24 @@
+# [1.2.0](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/compare/v1.1.0...v1.2.0) (2026-06-13)
+
+
+### Bug Fixes
+
+* auth viewmodel ([8ac7019](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/8ac7019c4dddac246bdb0d82e46cf6fe13c88148))
+* build errors ([9ce5979](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/9ce5979769c373f05187f1813aa4568290bfa6db))
+* erreurs build ([9814607](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/9814607e0fee9d5eb5a66c502ebeea2097a97304))
+
+
+### Features
+
+* Add comprehensive guide for internationalization (i18n) in Kotlin Compose ([158fc9b](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/158fc9bbc540a21204798a2a4c76609144312c99))
+* Add VibrationHelper for UI feedback and integrate into HTTP client error handling ([32e3314](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/32e33143f3887f7713d02454eee05f3f24f7474d))
+* auth link jwt ([3438a50](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/3438a501cf1fc7c35dedb86af01af790bcc3d50d))
+* **cart:** add cart, checkout and order confirmation screens ([9117c40](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/9117c4016d820c5b2ac184b983d3972468ed9ea6))
+* link Android app to Cyna API with JWT auth + auto-refresh ([f118158](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/f118158c943139c796d045dcb07494db48aa9c08))
+* link authentification avec l'api, register, login, logout, auth ([a1a7ff4](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/a1a7ff4e56f93f44b03bc1c15e8e9071eef4af6e))
+* pages login et register fonctionnelles avec forumlaires ainsi que navigation entre les pages ([24d0669](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/24d06695ea11e3e9ed17fe2862b608939f9b69bb))
+* Update gradle.properties ([45aed10](https://github.com/DiiageCUCDB/DI1-P5-E3_Cyna-App/commit/45aed10833f8273eb679f099b6c1ed024958f8a7))
+
 # 1.0.0 (2026-06-08)
 
 
