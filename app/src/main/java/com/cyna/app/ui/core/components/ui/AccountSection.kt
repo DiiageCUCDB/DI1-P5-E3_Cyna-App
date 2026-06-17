@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.cyna.app.domain.repository.AuthRepository
 import com.cyna.app.ui.screens.ordershistory.OrderHistoryScreen
 import com.cyna.app.ui.screens.profile.ProfileScreen
+import com.cyna.app.ui.screens.services.ServicesScreen
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -25,6 +26,7 @@ fun AccountSection(
     val backStackEntry by innerNav.currentBackStackEntryAsState()
     val currentTab = when (backStackEntry?.destination?.route) {
         "profile" -> NavTab.PROFILE
+        "services" -> NavTab.SERVICES
         else      -> NavTab.ORDERS
     }
 
@@ -35,6 +37,7 @@ fun AccountSection(
                 onTabSelected = { tab ->
                     val route = when (tab) {
                         NavTab.ORDERS  -> "orders"
+                        NavTab.SERVICES -> "services"
                         NavTab.PROFILE -> "profile"
                     }
                     innerNav.navigate(route) {
@@ -60,10 +63,12 @@ fun AccountSection(
             navController = innerNav,
             startDestination = when (initialTab) {
                 NavTab.ORDERS  -> "orders"
+                NavTab.SERVICES -> "services"
                 NavTab.PROFILE -> "profile"
             }
         ) {
             composable("orders") { OrderHistoryScreen(innerNav) }
+            composable("services") { ServicesScreen(innerNav) }
             composable("profile") { ProfileScreen(innerNav) }
         }
     }

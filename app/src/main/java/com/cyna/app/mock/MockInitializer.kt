@@ -31,6 +31,7 @@ object MockInitializer {
                 + userHandlers
                 + subscriptionHandlers
                 + accountOrderHandlers
+                + serviceHandlers
         )
 
         if (debug) {

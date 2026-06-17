@@ -68,7 +68,9 @@ val appModule = module {
     single { AuthAPI(get()) }
     single { UserAPI(get()) }
     single { OrderHistoryAPI(get()) }
+    single { ServiceAPI(get()) }
 
+    single<ServiceRepository> { ServiceRepositoryImpl(get()) }
     single<AuthRepository>        { AuthRepositoryImpl(get(), get(), get()) }
     single<UserRepository>        { UserRepositoryImpl(get()) }
     single<OrderHistoryRepository> { OrderHistoryRepositoryImpl(get()) }

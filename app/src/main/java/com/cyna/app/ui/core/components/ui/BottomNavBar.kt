@@ -1,6 +1,7 @@
 package com.cyna.app.ui.core.components.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
@@ -10,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-enum class NavTab { ORDERS, PROFILE }
+enum class NavTab { ORDERS, PROFILE, SERVICES }
 
 private data class NavItem(
     val tab: NavTab?,          // null = logout action
@@ -21,6 +22,7 @@ private data class NavItem(
 
 private val navItems = listOf(
     NavItem(NavTab.ORDERS,  "Orders",   Icons.Default.Receipt),
+    NavItem(NavTab.SERVICES, "Services", Icons.Default.Computer),
     NavItem(NavTab.PROFILE, "Profile",  Icons.Default.Person),
     NavItem(null,           "Sign out", Icons.Default.ExitToApp, isDestructive = true)
 )
