@@ -143,23 +143,6 @@ data class MockAuthResponse(
 
 object MockFactories {
 
-
-    /** Génère de la fausse télémétrie pour simuler un tableau de bord de cybersécurité */
-    fun makePurchasedService(): MockPurchasedService {
-        val maxLicenses = listOf(10, 50, 100, 500).random()
-        val statusChoice = listOf("Online", "Online", "Online", "Warning", "Offline").random()
-
-        return MockPurchasedService(
-            id = uuid(),
-            name = "${randomOf(companies)} ${randomOf(productSfx)}",
-            category = randomOf(catNames),
-            status = statusChoice,
-            activeUsage = if (statusChoice == "Offline") 0 else Random.nextInt(1, maxLicenses),
-            totalLicenses = maxLicenses,
-            threatsBlocked = Random.nextInt(0, 5000),
-            lastSyncTime = isoDate(Random.nextInt(2)) // Synchronisé récemment (max 2 jours)
-        )
-    }
     // UserProfileDto
     fun makeUser(
         email: String    = "${randomOf(firstNames).lowercase()}.${randomOf(lastNames).lowercase()}@example.com",

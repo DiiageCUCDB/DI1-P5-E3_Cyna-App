@@ -1,8 +1,8 @@
 package com.cyna.app.data.remote
 
 import com.cyna.app.data.dto.MessageResponse
-import com.cyna.app.data.dto.UserDto
 import com.cyna.app.data.dto.SubscriptionDto
+import com.cyna.app.data.dto.UserDto
 import com.cyna.app.data.dto.UpdatePasswordRequest
 import com.cyna.app.data.dto.UpdateProfileRequest
 import io.ktor.client.HttpClient

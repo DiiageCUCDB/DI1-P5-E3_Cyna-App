@@ -29,12 +29,23 @@ fun ServiceTelemetryCard(service: PurchasedService) {
             // En-tête
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically // On garde juste l'alignement vertical
             ) {
-                Column {
-                    Text(text = service.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    Text(text = service.category, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                // 1. On ajoute weight(1f) pour que cette colonne prenne tout l'espace disponible
+                // et on ajoute un peu de padding à droite pour ne pas coller la pastille
+                Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                    Text(
+                        text = service.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1, // 2. Force le texte sur une seule ligne
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis // 3. Ajoute "..." à la fin si c'est trop long
+                    )
+                    Text(
+                        text = service.category,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
 
                 val (icon, color, text) = when (service.status) {
@@ -43,6 +54,7 @@ fun ServiceTelemetryCard(service: PurchasedService) {
                     else -> Triple(Icons.Default.Error, MaterialTheme.colorScheme.error, "Hors ligne")
                 }
 
+                // 4. La pastille va maintenant garder sa taille naturelle et parfaite !
                 AssistChip(
                     onClick = { },
                     label = { Text(text) },
