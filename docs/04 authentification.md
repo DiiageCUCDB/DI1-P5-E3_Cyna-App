@@ -3,34 +3,34 @@
 ## Architecture complète
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Flux d'authentification                    │
-│                                                                 │
-│  LoginScreen ──────────────────────────────────────────────┐   │
-│  RegisterScreen ──→ ConfirmEmailScreen                     │   │
-│  ForgotPasswordScreen ──→ ResetPasswordScreen              │   │
-│  ProfileScreen ──→ Security2FAScreen                       │   │
-│                                                            │   │
-│  AuthViewModel (Login/Register)                            │   │
-│  ConfirmEmailViewModel                                     │   │
-│  ForgotPasswordViewModel                                   │   │
-│  ResetPasswordViewModel                                    │   │
-│  Security2FAViewModel                                      │   │
-└────────────────────────────┬───────────────────────────────┘   │
-                             │                                    │
-             AuthRepository (interface domain)                    │
-                     │                                            │
-             AuthRepositoryImpl                                   │
-                     ├── AuthAPI ──────────────────────────────┐  │
-                     │   ├── POST /auth/login                  │  │
-                     │   ├── POST /auth/register               │  │
-                     │   ├── POST /auth/logout                 │  │
-                     │   ├── GET  /auth/me                     │  │
-                     │   ├── POST /auth/forgot-password        │  │
-                     │   ├── POST /auth/reset-password         │  │
-                     │   └── POST /auth/confirm-email          │  │
-                     │                                         │  │
-                     └── SessionManager ←── CookieStorage      │  │
+┌──────────────────────────────────────────────────────────────────┐
+│                      Flux d'authentification                     │
+│                                                                  │
+│  LoginScreen ──────────────────────────────────────────────┐     │
+│  RegisterScreen ──→ ConfirmEmailScreen                     │     │
+│  ForgotPasswordScreen ──→ ResetPasswordScreen              │     │
+│  ProfileScreen ──→ Security2FAScreen                       │     │
+│                                                            │     │
+│  AuthViewModel (Login/Register)                            │     │
+│  ConfirmEmailViewModel                                     │     │
+│  ForgotPasswordViewModel                                   │     │ 
+│  ResetPasswordViewModel                                    │     │
+│  Security2FAViewModel                                      │     │
+└────────────────────────────┬───────────────────────────────┘     │
+                             │                                     │
+             AuthRepository (interface domain)                     │
+                     │                                             │
+             AuthRepositoryImpl                                    │
+                     ├── AuthAPI ───────────────────────────────┐  │
+                     │   ├── POST /auth/login                   │  │
+                     │   ├── POST /auth/register                │  │
+                     │   ├── POST /auth/logout                  │  │
+                     │   ├── GET  /auth/me                      │  │
+                     │   ├── POST /auth/forgot-password         │  │
+                     │   ├── POST /auth/reset-password          │  │
+                     │   └── POST /auth/confirm-email           │  │
+                     │                                          │  │
+                     └── SessionManager ←── CookieStorage       │  │
                                  └── SharedPreferences          │  │
                                                                 │  │
              TwoFactorRepository (interface)                    │  │

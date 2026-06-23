@@ -24,7 +24,8 @@ docs/
 │
 ├── 10_Kindling.md                   ← Bibliothèque Kindling (core/utils/android/compose)
 │
-└── 11_Mock_et_tests.md              ← MockEngine, MockRegistry, MockFactories
+├── 11_Mock_et_tests.md              ← MockEngine, MockRegistry, MockFactories
+└── 12_mes_services.md               ← surveillance des services achetés par l'utilisateur
 ```
 
 ---
@@ -35,28 +36,28 @@ docs/
 ┌─────────────────────────────────────────────────────────────┐
 │                        Application                          │
 │                                                             │
-│  ┌──────────────┐   ┌──────────────┐   ┌────────────────┐  │
-│  │  Auth Flow   │   │ Orders Flow  │   │  Profile Flow  │  │
-│  │              │   │              │   │                │  │
-│  │ LoginScreen  │   │ OrderHistory │   │ ProfileScreen  │  │
-│  │ RegisterScr. │   │ Screen       │   │                │  │
-│  └──────────────┘   └──────────────┘   └────────────────┘  │
+│  ┌──────────────┐   ┌──────────────┐   ┌────────────────┐   │
+│  │  Auth Flow   │   │ Orders Flow  │   │  Profile Flow  │   │
+│  │              │   │              │   │                │   │
+│  │ LoginScreen  │   │ OrderHistory │   │ ProfileScreen  │   │
+│  │ RegisterScr. │   │ Screen       │   │                │   │
+│  └──────────────┘   └──────────────┘   └────────────────┘   │
 │                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
+│  ┌──────────────────────────────────────────────────────┐   │
 │  │                    Kindling UI                       │   │
-│  │  KButton · KInput · KBadge · Skeleton · Toaster...  │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  │  KButton · KInput · KBadge · Skeleton · Toaster...   │   │
+│  └──────────────────────────────────────────────────────┘   │
 │                                                             │
-│  ┌──────────────┐   ┌──────────────┐   ┌────────────────┐  │
-│  │  Koin (DI)   │   │  Ktor (HTTP) │   │  SessionMgr    │  │
-│  │  AppModule   │   │  AuthAPI     │   │  SharedPrefs   │  │
-│  │              │   │  UserAPI     │   │  CookieStorage │  │
-│  └──────────────┘   └──────────────┘   └────────────────┘  │
+│  ┌──────────────┐   ┌──────────────┐   ┌────────────────┐   │
+│  │  Koin (DI)   │   │  Ktor (HTTP) │   │  SessionMgr    │   │
+│  │  AppModule   │   │  AuthAPI     │   │  SharedPrefs   │   │
+│  │              │   │  UserAPI     │   │  CookieStorage │   │
+│  └──────────────┘   └──────────────┘   └────────────────┘   │
 │                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │              Mock Layer (MOCK_API=true)              │   │
-│  │   MockEngine · MockRegistry · MockFactories         │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              Mock Layer (MOCK_API=true)             │    │
+│  │   MockEngine · MockRegistry · MockFactories         │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 

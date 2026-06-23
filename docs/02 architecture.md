@@ -8,12 +8,12 @@ Le projet suit une **Clean Architecture à 3 couches** avec une séparation stri
 ┌─────────────────────────────────────────────────────────┐
 │                      UI Layer                           │
 │                                                         │
-│   Composables Compose  ←→  ViewModel (KViewModel)      │
+│   Composables Compose  ←→  ViewModel (KViewModel)       │
 │   LoginScreen              AuthViewModel                │
 │   OrderHistoryScreen       OrderHistoryViewModel        │
 │   ProfileScreen            ProfileViewModel             │
 │                                                         │
-│   Kindling UI (KButton, KInput, KBadge, Skeleton…)     │
+│   Kindling UI (KButton, KInput, KBadge, Skeleton…)      │
 └────────────────────────────┬────────────────────────────┘
                              │  interfaces domain
 ┌────────────────────────────▼────────────────────────────┐
@@ -30,7 +30,7 @@ Le projet suit une **Clean Architecture à 3 couches** avec une séparation stri
 ┌────────────────────────────▼────────────────────────────┐
 │                     Data Layer                          │
 │                                                         │
-│   RepositoryImpl   →  XxxAPI  →  HttpClient (Ktor)     │
+│   RepositoryImpl   →  XxxAPI  →  HttpClient (Ktor)      │
 │                                        │                │
 │   SessionManager (SharedPreferences)   │                │
 │   SessionManagerCookieStorage          │                │
