@@ -24,10 +24,12 @@ Cyna-App/
 │           │   │   ├── HttpClient.kt       ← createHttpClient(), HttpException, cookies
 │           │   │   ├── AuthAPI.kt
 │           │   │   ├── UserAPI.kt
+│           │   │   ├── ServiceAPI.kt
 │           │   │   └── OrderHistoryAPI.kt
 │           │   ├── repository/
 │           │   │   ├── AuthRepositoryImpl.kt
 │           │   │   ├── UserRepositoryImpl.kt
+│           │   │   ├── ServiceRepositoryimpl.kt
 │           │   │   └── OrderHistoryRepositoryImpl.kt
 │           │   └── util/
 │           │       └── VibrationHelper.kt
@@ -38,12 +40,14 @@ Cyna-App/
 │           ├── domain/
 │           │   ├── model/                  ← Data classes pures (aucune dépendance Android)
 │           │   │   ├── Profile.kt          ← User, Subscription
+│           │   │   ├── PurchasedService.kt          ← User, Subscription
 │           │   │   └── AccountOrder.kt     ← AccountOrder, OrderItem
 │           │   ├── repository/             ← Interfaces consommées par les ViewModels
 │           │   │   ├── AuthRepository.kt
 │           │   │   ├── UserRepository.kt
+│           │   │   ├── ServiceRepository.kt
 │           │   │   └── OrderHistoryRepository.kt
-│           │   └── usecase/               ← Logique métier isolée (à compléter)
+│           │   └── usecase/               ← Logique métier isolée
 │           │
 │           ├── mock/                       ← Couche mock (actif si MOCK_API=true)
 │           │   ├── MockInitializer.kt
@@ -76,6 +80,7 @@ Cyna-App/
 │               │       ├── SectionCard.kt
 │               │       ├── layout/             ← MainScaffold, Header, Footer, Spacers…
 │               │       ├── order/              ← OrderRow, YearGroup, YearFilterRow
+│               │       ├── services/           ← ServiceTelemetryCard
 │               │       └── profile/            ← SubscriptionRow
 │               │
 │               └── screens/
@@ -98,6 +103,9 @@ Cyna-App/
 │                   ├── ordershistory/
 │                   │   ├── OrderHistoryViewModel.kt
 │                   │   └── OrderHistoryScreen.kt
+│                   ├── services/
+│                   │   ├── ServicesViewModel.kt
+│                   │   └── ServicesScreen.kt
 │                   └── profile/
 │                       ├── ProfileViewModel.kt
 │                       └── ProfileScreen.kt
