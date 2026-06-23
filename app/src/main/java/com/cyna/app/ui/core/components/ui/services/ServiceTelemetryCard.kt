@@ -1,4 +1,4 @@
-package com.cyna.app.ui.screens.services.components
+package com.cyna.app.ui.core.components.ui.services
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cyna.app.domain.model.PurchasedService
 import com.cyna.app.domain.model.ServiceStatus
@@ -39,7 +40,7 @@ fun ServiceTelemetryCard(service: PurchasedService) {
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1, // 2. Force le texte sur une seule ligne
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis // 3. Ajoute "..." à la fin si c'est trop long
+                        overflow = TextOverflow.Ellipsis // 3. Ajoute "..." à la fin si c'est trop long
                     )
                     Text(
                         text = service.category,

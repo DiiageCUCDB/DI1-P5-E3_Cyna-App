@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.cyna.app.ui.screens.services.components.ServiceTelemetryCard
+import com.cyna.app.ui.core.components.ui.services.ServiceTelemetryCard
 import dev.kindling.compose.KScreen
 
 // ── Screen entry ─────────────────────────────────────────────────────────────
