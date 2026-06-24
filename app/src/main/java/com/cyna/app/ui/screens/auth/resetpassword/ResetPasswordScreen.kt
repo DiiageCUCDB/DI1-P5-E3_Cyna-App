@@ -31,6 +31,13 @@ import androidx.navigation.NavController
 import com.cyna.app.ui.core.components.ui.AuthCard
 import dev.kindling.core.components.rememberInputOTPState
 
+// No "success" role exists in the app's color scheme — used only for the
+// reset-confirmed checkmark badge and "rule met" icon/text below.
+private val SuccessBg = Color(0xFFDCFCE7)
+private val SuccessIcon = Color(0xFF16A34A)
+private val SuccessGreen = Color(0xFF22C55E)
+private val SuccessGreenText = Color(0xFF15803D)
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -67,6 +74,7 @@ private fun ResetPasswordContent(
     onSubmit: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {}
 ) {
+    val cs = MaterialTheme.colorScheme
     val otpState = rememberInputOTPState(
         value = state.code,
         length = 6,
@@ -79,7 +87,7 @@ private fun ResetPasswordContent(
             .windowInsetsPadding(WindowInsets.systemBars),
         contentAlignment = Alignment.Center
     ) {
-        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFf4f4f6)) {}
+        Surface(modifier = Modifier.fillMaxSize(), color = cs.background) {}
 
         AnimatedContent(
             targetState = state.success,
@@ -104,12 +112,12 @@ private fun ResetPasswordContent(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(100.dp),
-                                color = Color(0xFFDCFCE7)
+                                color = SuccessBg
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
-                                    tint = Color(0xFF16A34A),
+                                    tint = SuccessIcon,
                                     modifier = Modifier
                                         .padding(14.dp)
                                         .size(28.dp)
@@ -123,7 +131,7 @@ private fun ResetPasswordContent(
                             "Mot de passe réinitialisé",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF111827),
+                            color = cs.onSurface,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -133,7 +141,7 @@ private fun ResetPasswordContent(
                         Text(
                             "Votre mot de passe a été mis à jour. Vous pouvez maintenant vous connecter.",
                             fontSize = 14.sp,
-                            color = Color(0xFF6B7280),
+                            color = cs.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -164,12 +172,12 @@ private fun ResetPasswordContent(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = Color(0xFFEDE9FE)
+                                color = cs.primaryContainer
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Key,
                                     contentDescription = null,
-                                    tint = Color(0xFF7C3AED),
+                                    tint = cs.onPrimaryContainer,
                                     modifier = Modifier
                                         .padding(12.dp)
                                         .size(24.dp)
@@ -183,7 +191,7 @@ private fun ResetPasswordContent(
                             "Nouveau mot de passe",
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF111827),
+                            color = cs.onSurface,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -193,7 +201,7 @@ private fun ResetPasswordContent(
                         Text(
                             "Saisissez le code reçu par email et choisissez un nouveau mot de passe.",
                             fontSize = 14.sp,
-                            color = Color(0xFF6B7280),
+                            color = cs.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -205,16 +213,16 @@ private fun ResetPasswordContent(
                             Column {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFFFEF2F2),
+                                    color = cs.errorContainer,
                                     border = androidx.compose.foundation.BorderStroke(
-                                        1.dp, Color(0xFFFEE2E2)
+                                        1.dp, cs.error.copy(alpha = 0.3f)
                                     ),
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
                                         state.error ?: "",
                                         fontSize = 13.sp,
-                                        color = Color(0xFFB91C1C),
+                                        color = cs.error,
                                         modifier = Modifier.padding(12.dp)
                                     )
                                 }
@@ -266,7 +274,7 @@ private fun ResetPasswordContent(
                                 Text(
                                     "Le code expire dans 15 minutes. ",
                                     fontSize = 12.sp,
-                                    color = Color(0xFF9CA3AF)
+                                    color = cs.outline
                                 )
                                 TextButton(
                                     onClick = { /* navigate to forgot-password */ },
@@ -275,7 +283,7 @@ private fun ResetPasswordContent(
                                     Text(
                                         "Renvoyer un code",
                                         fontSize = 12.sp,
-                                        color = Color(0xFF7C3AED),
+                                        color = cs.primary,
                                         textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
                                     )
                                 }
@@ -302,7 +310,7 @@ private fun ResetPasswordContent(
                             Column(modifier = Modifier.padding(top = 8.dp)) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFFF9FAFB),
+                                    color = cs.surfaceVariant,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Column(
@@ -318,12 +326,12 @@ private fun ResetPasswordContent(
                                                     imageVector = if (ok) Icons.Default.Check else Icons.Default.Circle,
                                                     contentDescription = null,
                                                     modifier = Modifier.size(14.dp),
-                                                    tint = if (ok) Color(0xFF22C55E) else Color(0xFFD1D5DB)
+                                                    tint = if (ok) SuccessGreen else cs.outline
                                                 )
                                                 Text(
                                                     rule.label,
                                                     fontSize = 12.sp,
-                                                    color = if (ok) Color(0xFF15803D) else Color(0xFF6B7280)
+                                                    color = if (ok) SuccessGreenText else cs.onSurfaceVariant
                                                 )
                                             }
                                         }
@@ -349,14 +357,14 @@ private fun ResetPasswordContent(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null,
-                            tint = Color(0xFF9CA3AF),
+                            tint = cs.outline,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
                             "Retour à la connexion",
                             fontSize = 14.sp,
-                            color = Color(0xFF9CA3AF)
+                            color = cs.outline
                         )
                     }
                 }

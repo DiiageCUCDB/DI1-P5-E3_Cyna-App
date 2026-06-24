@@ -11,7 +11,7 @@
     <string name="login_password_label">Mot de passe</string>
     <string name="login_password_placeholder">••••••••</string>
     <string name="login_remember_me">Se souvenir de moi</string>
-    <string name="login_forgot_password">Mot de passe oublié ?</string>
+    <string name="login_forgot_password">MDP Oublié ?</string>
     <string name="login_button">Se connecter</string>
 
     <!-- Auth - Register -->

@@ -1,0 +1,33 @@
+Index: app/src/main/java/com/cyna/app/ui/core/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.cyna.app.ui.core\n\nimport androidx.compose.runtime.Composable\nimport androidx.compose.runtime.collectAsState\nimport androidx.compose.runtime.getValue\nimport androidx.compose.ui.Modifier\nimport androidx.navigation.NamedNavArgument\nimport androidx.navigation.NavBackStackEntry\nimport androidx.navigation.NavController\nimport androidx.navigation.NavDeepLink\nimport androidx.navigation.NavGraphBuilder\nimport androidx.navigation.NavHostController\nimport androidx.navigation.NavOptions\nimport androidx.navigation.NavOptionsBuilder\nimport androidx.navigation.Navigator\nimport androidx.navigation.compose.composable\nimport com.cyna.app.data.local.SessionManager\nimport com.cyna.app.ui.core.components.ui.AccountSection\nimport com.cyna.app.ui.core.components.ui.NavTab\nimport com.cyna.app.ui.screens.auth.LoginScreen\nimport com.cyna.app.ui.screens.auth.RegisterScreen\nimport kotlinx.serialization.Serializable\nimport kotlinx.serialization.Transient\nimport org.koin.compose.koinInject\n\n@Serializable\nsealed class Destination {\n    abstract val route: String\n    @Transient\n    open val arguments: List<NamedNavArgument> = emptyList()\n\n    @Serializable\n    object Login : Destination() {\n        override val route = \"login\"\n    }\n\n    @Serializable\n    object Register : Destination() {\n        override val route = \"register\"\n    }\n\n    @Serializable\n    object Profile : Destination() {\n        override val route = \"profile\"\n    }\n\n    @Serializable\n    object OrdersHistory : Destination() {\n        override val route = \"orders-history\"\n    }\n}\n\nfun NavGraphBuilder.composable(\n    destination: Destination,\n    deepLinks: List<NavDeepLink> = emptyList(),\n    content: @Composable (NavBackStackEntry) -> Unit\n) = composable(\n    route = destination.route,\n    arguments = destination.arguments,\n    deepLinks = deepLinks\n) { backStackEntry -> content(backStackEntry) }\n\nfun NavController.navigateTo(\n    destination: Destination,\n    navOptions: NavOptions? = null,\n    navigatorExtras: Navigator.Extras? = null\n) = navigate(route = destination.route, navOptions = navOptions, navigatorExtras = navigatorExtras)\n\nfun NavController.navigateTo(\n    destination: Destination,\n    builder: NavOptionsBuilder.() -> Unit\n) = navigate(route = destination.route, builder = builder)\n\n@Composable\nfun NavHost(navController: NavHostController, modifier: Modifier = Modifier) {\n    val sessionManager: SessionManager = koinInject()\n    val token by sessionManager.token.collectAsState()\n    val isAuthenticated = token != null\n\n    androidx.navigation.compose.NavHost(\n        navController = navController,\n        startDestination = if (isAuthenticated) Destination.OrdersHistory.route else Destination.Login.route,\n        modifier = modifier\n    ) {\n        composable(Destination.Login) {\n            LoginScreen(\n                navController = navController,\n                onNavigateToRegister = { navController.navigateTo(Destination.Register) },\n                onLoginSuccess = {\n                    navController.navigateTo(Destination.OrdersHistory) {\n                        popUpTo(Destination.Login.route) { inclusive = true }\n                    }\n                }\n            )\n        }\n        composable(Destination.Register) {\n            RegisterScreen(\n                navController = navController,\n                onNavigateToLogin = { navController.navigateTo(Destination.Login) },\n                onRegisterSuccess = {\n                    navController.navigateTo(Destination.Login) {\n                        popUpTo(Destination.Register.route) { inclusive = true }\n                    }\n                }\n            )\n        }\n        composable(Destination.OrdersHistory) {\n            AccountSection(\n                initialTab = NavTab.ORDERS\n            )\n        }\n        composable(Destination.Profile) {\n            AccountSection(\n                initialTab = NavTab.PROFILE\n            )\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/cyna/app/ui/core/Navigation.kt b/app/src/main/java/com/cyna/app/ui/core/Navigation.kt
+--- a/app/src/main/java/com/cyna/app/ui/core/Navigation.kt	(revision ba191b5e904a847f9480c76c0355105f900c3dcb)
++++ b/app/src/main/java/com/cyna/app/ui/core/Navigation.kt	(date 1782202862232)
+@@ -48,6 +48,11 @@
+     object OrdersHistory : Destination() {
+         override val route = "orders-history"
+     }
++
++    @Serializable
++    object Services : Destination() {
++        override val route = "services"
++    }
+ }
+ 
+ fun NavGraphBuilder.composable(
+@@ -114,5 +119,10 @@
+                 initialTab = NavTab.PROFILE
+             )
+         }
++        composable(Destination.Services) {
++            AccountSection(
++                initialTab = NavTab.SERVICES
++            )
++        }
+     }
+ }

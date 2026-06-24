@@ -18,7 +18,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,7 +57,9 @@ private fun ForgotPasswordContent(
     onContinueToReset: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
-    // Background matches web: #f4f4f6
+    val cs = MaterialTheme.colorScheme
+
+    // Background follows theme (light/dark)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +68,7 @@ private fun ForgotPasswordContent(
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Color(0xFFf4f4f6)
+            color = cs.background
         ) {}
 
         AnimatedContent(
@@ -87,7 +88,7 @@ private fun ForgotPasswordContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AuthCard {
-                        // Mail icon in purple circle
+                        // Mail icon in primary-tinted circle
                         Box(
                             modifier = Modifier
                                 .size(56.dp)
@@ -96,12 +97,12 @@ private fun ForgotPasswordContent(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(100.dp),
-                                color = Color(0xFFEDE9FE)
+                                color = cs.primaryContainer
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Mail,
                                     contentDescription = null,
-                                    tint = Color(0xFF7C3AED),
+                                    tint = cs.onPrimaryContainer,
                                     modifier = Modifier
                                         .padding(14.dp)
                                         .size(28.dp)
@@ -115,7 +116,7 @@ private fun ForgotPasswordContent(
                             "Vérifiez votre boîte mail",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF111827),
+                            color = cs.onSurface,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -129,7 +130,7 @@ private fun ForgotPasswordContent(
                                 append(" correspond à un compte, vous recevrez un code à 6 chiffres valable ")
                             },
                             fontSize = 14.sp,
-                            color = Color(0xFF6B7280),
+                            color = cs.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -137,7 +138,7 @@ private fun ForgotPasswordContent(
                             "15 minutes.",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF374151),
+                            color = cs.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -147,14 +148,14 @@ private fun ForgotPasswordContent(
                         Text(
                             "Pensez à vérifier vos spams.",
                             fontSize = 12.sp,
-                            color = Color(0xFF9CA3AF),
+                            color = cs.outline,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
 
                         Spacer(Modifier.height(28.dp))
 
-                        // "Saisir le code reçu →" button (dark)
+                        // "Saisir le code reçu →" button
                         KButton(
                             text = "Saisir le code reçu →",
                             onClick = onContinueToReset,
@@ -171,7 +172,7 @@ private fun ForgotPasswordContent(
                             Text(
                                 "Renvoyer un code",
                                 fontSize = 12.sp,
-                                color = Color(0xFF9CA3AF),
+                                color = cs.outline,
                                 textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
                             )
                         }
@@ -194,12 +195,12 @@ private fun ForgotPasswordContent(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = Color(0xFFEDE9FE)
+                                color = cs.primaryContainer
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Security,
                                     contentDescription = null,
-                                    tint = Color(0xFF7C3AED),
+                                    tint = cs.onPrimaryContainer,
                                     modifier = Modifier
                                         .padding(12.dp)
                                         .size(24.dp)
@@ -213,7 +214,7 @@ private fun ForgotPasswordContent(
                             "Mot de passe oublié ?",
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF111827),
+                            color = cs.onSurface,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -223,7 +224,7 @@ private fun ForgotPasswordContent(
                         Text(
                             "Saisissez votre email et nous vous enverrons un code de réinitialisation.",
                             fontSize = 14.sp,
-                            color = Color(0xFF6B7280),
+                            color = cs.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -234,7 +235,7 @@ private fun ForgotPasswordContent(
                         AnimatedVisibility(visible = state.error != null) {
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
-                                color = Color(0xFFFEF2F2),
+                                color = cs.errorContainer,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Row(
@@ -244,7 +245,7 @@ private fun ForgotPasswordContent(
                                     Text(
                                         state.error ?: "",
                                         fontSize = 13.sp,
-                                        color = Color(0xFFB91C1C)
+                                        color = cs.error
                                     )
                                 }
                             }
@@ -281,14 +282,14 @@ private fun ForgotPasswordContent(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null,
-                            tint = Color(0xFF9CA3AF),
+                            tint = cs.outline,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
                             "Retour à la connexion",
                             fontSize = 14.sp,
-                            color = Color(0xFF9CA3AF)
+                            color = cs.outline
                         )
                     }
                 }

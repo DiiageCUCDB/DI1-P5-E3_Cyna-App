@@ -23,6 +23,11 @@ import com.cyna.app.ui.core.components.ui.profile.SubscriptionRow
 import dev.kindling.compose.KScreen
 import dev.kindling.core.components.*
 
+// No "success"/"warning" roles exist in the app's color scheme — used only
+// for the "Vérifié" email badge and the unverified-email warning text below.
+private val SuccessColor = Color(0xFF16A34A)
+private val WarningColor = Color(0xFFD97706)
+
 // ── Skeleton ─────────────────────────────────────────────────────────────────
 // Matches web ProfileSkeleton: 3 cards with skeleton rows
 
@@ -55,9 +60,9 @@ private fun ProfileSectionCard(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        color = Color.White,
+        color = cs.surface,
         shadowElevation = 0.dp,
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+        border = BorderStroke(1.dp, cs.outline)
     ) {
         Column {
             // Header with bottom divider
@@ -81,20 +86,20 @@ private fun ProfileSectionCard(
                         title,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF111827)
+                        color = cs.onSurface
                     )
                     if (description.isNotBlank()) {
                         Spacer(Modifier.height(2.dp))
                         Text(
                             description,
                             fontSize = 12.sp,
-                            color = Color(0xFF6B7280),
+                            color = cs.onSurfaceVariant,
                             lineHeight = 18.sp
                         )
                     }
                 }
             }
-            HorizontalDivider(color = Color(0xFFE5E7EB), thickness = 1.dp)
+            HorizontalDivider(color = cs.outline, thickness = 1.dp)
 
             // Content
             if (loadingHeader) {
@@ -168,13 +173,15 @@ private fun ProfileContent(
     onConfirmCancel: () -> Unit = {},
     onNavigateTo2FA: () -> Unit = {}
 ) {
+    val cs = MaterialTheme.colorScheme
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        // Background matches web profile page (white layout, cards only)
-        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFf4f4f6)) {}
+        // Background follows theme (light/dark)
+        Surface(modifier = Modifier.fillMaxSize(), color = cs.background) {}
 
         Column(
             modifier = Modifier
@@ -188,7 +195,7 @@ private fun ProfileContent(
                 "Mon profil",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF111827)
+                color = cs.onSurface
             )
 
             if (state.loadingUser) {
@@ -234,26 +241,26 @@ private fun ProfileContent(
                                 Spacer(Modifier.width(6.dp))
                                 Surface(
                                     shape = RoundedCornerShape(6.dp),
-                                    color = Color(0xFF16A34A).copy(0.10f)
+                                    color = SuccessColor.copy(alpha = 0.10f)
                                 ) {
                                     Text(
                                         "Vérifié",
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Medium,
-                                        color = Color(0xFF16A34A)
+                                        color = SuccessColor
                                     )
                                 }
                             }
                         } else null
                     )
 
-                    // Non-verified warning link (matches web amber text)
+                    // Non-verified warning link
                     if (state.user?.isEmailVerified == false) {
                         Text(
                             "Adresse non vérifiée. Vérifier maintenant",
                             fontSize = 12.sp,
-                            color = Color(0xFFD97706),
+                            color = WarningColor,
                             modifier = Modifier.padding(top = 2.dp)
                         )
                     }
@@ -315,14 +322,14 @@ private fun ProfileContent(
                         ) { Text(if (state.savingPassword) "Mise à jour…" else "Mettre à jour") }
                     }
 
-                    // 2FA row (visible only for Admin / SuperAdmin) — matches web
+                    // 2FA row (visible only for Admin / SuperAdmin)
                     val role = state.user?.role
                     if (role == "Admin" || role == "SuperAdmin") {
-                        HorizontalDivider(color = Color(0xFFE5E7EB), thickness = 0.5.dp)
+                        HorizontalDivider(color = cs.outline, thickness = 0.5.dp)
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = Color.White,
-                            border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
+                            color = cs.surface,
+                            border = BorderStroke(1.dp, cs.outline),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -337,12 +344,12 @@ private fun ProfileContent(
                                         "Double authentification (2FA)",
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.Medium,
-                                        color = Color(0xFF111827)
+                                        color = cs.onSurface
                                     )
                                     Text(
                                         "Requis pour la connexion à l'espace administrateur.",
                                         fontSize = 11.sp,
-                                        color = Color(0xFF6B7280)
+                                        color = cs.onSurfaceVariant
                                     )
                                 }
                                 KButton(
@@ -370,7 +377,7 @@ private fun ProfileContent(
                         Text(
                             "Aucun abonnement actif pour le moment.",
                             fontSize = 12.sp,
-                            color = Color(0xFF9CA3AF)
+                            color = cs.outline
                         )
                     } else {
                         state.subscriptions.forEach { sub ->

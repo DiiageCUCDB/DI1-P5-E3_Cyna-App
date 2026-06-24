@@ -35,6 +35,10 @@ import dev.kindling.core.components.KButton
 import dev.kindling.core.components.KButtonVariant
 import dev.kindling.core.components.rememberInputOTPState
 
+// No "success" role exists in the app's color scheme — used only for the
+// activation-confirmed checkmark badge below.
+private val SuccessBg = Color(0xFFDCFCE7)
+private val SuccessIcon = Color(0xFF16A34A)
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -66,6 +70,7 @@ private fun Security2FAContent(
     onNavigateToAdmin: () -> Unit = {},
     onNavigateToProfile: () -> Unit = {}
 ) {
+    val cs = MaterialTheme.colorScheme
     val otpState = rememberInputOTPState(
         value = state.code,
         length = 6,
@@ -77,7 +82,7 @@ private fun Security2FAContent(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFf4f4f6)) {}
+        Surface(modifier = Modifier.fillMaxSize(), color = cs.background) {}
 
         AnimatedContent(
             targetState = state.activated,
@@ -103,12 +108,12 @@ private fun Security2FAContent(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(100.dp),
-                                color = Color(0xFFDCFCE7)
+                                color = SuccessBg
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
-                                    tint = Color(0xFF16A34A),
+                                    tint = SuccessIcon,
                                     modifier = Modifier
                                         .padding(14.dp)
                                         .size(28.dp)
@@ -122,7 +127,7 @@ private fun Security2FAContent(
                             "2FA activé avec succès",
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF111827),
+                            color = cs.onSurface,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -132,7 +137,7 @@ private fun Security2FAContent(
                         Text(
                             "Vous devrez désormais utiliser la connexion administrateur avec votre code TOTP.",
                             fontSize = 13.sp,
-                            color = Color(0xFF6B7280),
+                            color = cs.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -172,12 +177,12 @@ private fun Security2FAContent(
                     ) {
                         Surface(
                             shape = RoundedCornerShape(10.dp),
-                            color = Color(0xFFEDE9FE)
+                            color = cs.primaryContainer
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Security,
                                 contentDescription = null,
-                                tint = Color(0xFF7C3AED),
+                                tint = cs.onPrimaryContainer,
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .size(20.dp)
@@ -188,12 +193,12 @@ private fun Security2FAContent(
                                 "Double authentification",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF111827)
+                                color = cs.onSurface
                             )
                             Text(
                                 "Sécurisez votre compte administrateur avec un code TOTP.",
                                 fontSize = 12.sp,
-                                color = Color(0xFF6B7280)
+                                color = cs.onSurfaceVariant
                             )
                         }
                     }
@@ -217,26 +222,27 @@ private fun Security2FAContent(
 
 @Composable
 private fun Step1Card(state: Security2FAContracts.UiState) {
+    val cs = MaterialTheme.colorScheme
     val clipboardManager = LocalClipboardManager.current
     var copied by remember { mutableStateOf(false) }
 
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = Color.White,
+        color = cs.surface,
         shadowElevation = 1.dp,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF3F4F6))
+        border = androidx.compose.foundation.BorderStroke(1.dp, cs.outlineVariant)
     ) {
         Column {
             // Header
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                Text("1. Scannez le QR code", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF111827))
+                Text("1. Scannez le QR code", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = cs.onSurface)
                 Spacer(Modifier.height(2.dp))
                 Text(
                     "Avec Google Authenticator, Authy, ou toute autre application TOTP.",
-                    fontSize = 12.sp, color = Color(0xFF6B7280)
+                    fontSize = 12.sp, color = cs.onSurfaceVariant
                 )
             }
-            HorizontalDivider(color = Color(0x4D9CA3AF), thickness = 0.5.dp)
+            HorizontalDivider(color = cs.outlineVariant, thickness = 0.5.dp)
 
             Column(modifier = Modifier.padding(16.dp)) {
                 when {
@@ -248,7 +254,7 @@ private fun Step1Card(state: Security2FAContracts.UiState) {
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(
-                                color = Color(0xFF7C3AED),
+                                color = cs.primary,
                                 modifier = Modifier.size(32.dp)
                             )
                         }
@@ -257,13 +263,13 @@ private fun Step1Card(state: Security2FAContracts.UiState) {
                     state.setupError != null && state.setup == null -> {
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = Color(0xFFFEF2F2),
+                            color = cs.errorContainer,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
                                 state.setupError,
                                 fontSize = 13.sp,
-                                color = Color(0xFFB91C1C),
+                                color = cs.error,
                                 modifier = Modifier.padding(12.dp)
                             )
                         }
@@ -281,7 +287,7 @@ private fun Step1Card(state: Security2FAContracts.UiState) {
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
                                 border = androidx.compose.foundation.BorderStroke(
-                                    1.dp, Color(0x1A000000)
+                                    1.dp, cs.outline
                                 )
                             ) {
                                 AsyncImage(
@@ -300,13 +306,13 @@ private fun Step1Card(state: Security2FAContracts.UiState) {
                                 Text(
                                     "Vous ne pouvez pas scanner ? Entrez cette clé manuellement :",
                                     fontSize = 12.sp,
-                                    color = Color(0xFF6B7280)
+                                    color = cs.onSurfaceVariant
                                 )
 
                                 // Secret key with copy button
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFFF3F4F6),
+                                    color = cs.surfaceVariant,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Row(
@@ -318,7 +324,7 @@ private fun Step1Card(state: Security2FAContracts.UiState) {
                                             state.setup.secret,
                                             fontSize = 11.sp,
                                             fontFamily = FontFamily.Monospace,
-                                            color = Color(0xFF374151),
+                                            color = cs.onSurfaceVariant,
                                             letterSpacing = 1.sp,
                                             modifier = Modifier.weight(1f)
                                         )
@@ -332,7 +338,7 @@ private fun Step1Card(state: Security2FAContracts.UiState) {
                                             Icon(
                                                 imageVector = if (copied) Icons.Default.Check else Icons.Default.ContentCopy,
                                                 contentDescription = "Copier",
-                                                tint = if (copied) Color(0xFF16A34A) else Color(0xFF6B7280),
+                                                tint = if (copied) SuccessIcon else cs.onSurfaceVariant,
                                                 modifier = Modifier.size(14.dp)
                                             )
                                         }
@@ -346,13 +352,13 @@ private fun Step1Card(state: Security2FAContracts.UiState) {
                                     Icon(
                                         imageVector = Icons.Default.Smartphone,
                                         contentDescription = null,
-                                        tint = Color(0xFF9CA3AF),
+                                        tint = cs.outline,
                                         modifier = Modifier.size(12.dp)
                                     )
                                     Text(
                                         "Type : Basé sur le temps (TOTP), 6 chiffres, 30 secondes.",
                                         fontSize = 11.sp,
-                                        color = Color(0xFF9CA3AF)
+                                        color = cs.outline
                                     )
                                 }
                             }
@@ -370,24 +376,25 @@ private fun Step2Card(
     state: Security2FAContracts.UiState,
     onConfirm: () -> Unit
 ) {
+    val cs = MaterialTheme.colorScheme
     val isReady = state.code.trim().length == 6
 
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = Color.White,
+        color = cs.surface,
         shadowElevation = 1.dp,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF3F4F6))
+        border = androidx.compose.foundation.BorderStroke(1.dp, cs.outlineVariant)
     ) {
         Column {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                Text("2. Confirmez l'activation", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF111827))
+                Text("2. Confirmez l'activation", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = cs.onSurface)
                 Spacer(Modifier.height(2.dp))
                 Text(
                     "Saisissez le code à 6 chiffres affiché dans votre application.",
-                    fontSize = 12.sp, color = Color(0xFF6B7280)
+                    fontSize = 12.sp, color = cs.onSurfaceVariant
                 )
             }
-            HorizontalDivider(color = Color(0x4D9CA3AF), thickness = 0.5.dp)
+            HorizontalDivider(color = cs.outlineVariant, thickness = 0.5.dp)
 
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -397,14 +404,14 @@ private fun Step2Card(
                 AnimatedVisibility(visible = state.confirmError != null) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFFFEF2F2),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFEE2E2)),
+                        color = cs.errorContainer,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, cs.error.copy(alpha = 0.3f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             state.confirmError ?: "",
                             fontSize = 13.sp,
-                            color = Color(0xFFB91C1C),
+                            color = cs.error,
                             modifier = Modifier.padding(12.dp)
                         )
                     }
@@ -446,4 +453,3 @@ private fun Step2Card(
         }
     }
 }
-

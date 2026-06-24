@@ -29,6 +29,14 @@ import com.cyna.app.ui.core.components.ui.FieldWithLabel
 import dev.kindling.compose.KScreen
 import dev.kindling.core.components.KButton
 
+// No "success" role exists in the app's color scheme (Theme.kt / Color.kt only
+// define background/primary/secondary/accent/border/destructive). These two
+// constants are used purely for the "criterion met" check icon/text below.
+// If you'd like this to be theme-driven too, add success/onSuccess colors to
+// Color.kt + Theme.kt and swap these for MaterialTheme.colorScheme.success.
+private val SuccessGreen = Color(0xFF22C55E)
+private val SuccessGreenText = Color(0xFF15803D)
+
 @Composable
 fun RegisterScreen(
     navController: NavController,
@@ -62,6 +70,7 @@ private fun RegisterContent(
     onNavigateToLogin: () -> Unit = {}
 ) {
     var showPasswordRules by remember { mutableStateOf(false) }
+    val cs = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier
@@ -69,7 +78,7 @@ private fun RegisterContent(
             .windowInsetsPadding(WindowInsets.systemBars),
         contentAlignment = Alignment.Center
     ) {
-        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFf4f4f6)) {}
+        Surface(modifier = Modifier.fillMaxSize(), color = cs.background) {}
 
         Column(
             modifier = Modifier
@@ -85,7 +94,7 @@ private fun RegisterContent(
                     text = stringResource(R.string.register_title),
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF111827),
+                    color = cs.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -95,7 +104,7 @@ private fun RegisterContent(
                 // Subtitle with login link
                 val subtitle = buildAnnotatedString {
                     append(stringResource(R.string.register_subtitle_prefix))
-                    withStyle(SpanStyle(color = Color(0xFF7C3AED), fontWeight = FontWeight.SemiBold)) {
+                    withStyle(SpanStyle(color = cs.primary, fontWeight = FontWeight.SemiBold)) {
                         append(" ${stringResource(R.string.register_subtitle_link)}")
                     }
                 }
@@ -104,7 +113,7 @@ private fun RegisterContent(
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
-                    Text(subtitle, fontSize = 14.sp, color = Color(0xFF6B7280))
+                    Text(subtitle, fontSize = 14.sp, color = cs.onSurfaceVariant)
                 }
 
                 Spacer(Modifier.height(24.dp))
@@ -127,7 +136,7 @@ private fun RegisterContent(
                         if (state.firstNameError != null) {
                             Text(
                                 state.firstNameError,
-                                color = Color(0xFFDC2626),
+                                color = cs.error,
                                 fontSize = 11.sp,
                                 modifier = Modifier.padding(top = 3.dp)
                             )
@@ -146,7 +155,7 @@ private fun RegisterContent(
                         if (state.lastNameError != null) {
                             Text(
                                 state.lastNameError,
-                                color = Color(0xFFDC2626),
+                                color = cs.error,
                                 fontSize = 11.sp,
                                 modifier = Modifier.padding(top = 3.dp)
                             )
@@ -169,7 +178,7 @@ private fun RegisterContent(
                 if (state.emailError != null) {
                     Text(
                         state.emailError,
-                        color = Color(0xFFDC2626),
+                        color = cs.error,
                         fontSize = 11.sp,
                         modifier = Modifier
                             .align(Alignment.Start)
@@ -201,7 +210,7 @@ private fun RegisterContent(
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                         shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFFF9FAFB)
+                        color = cs.surfaceVariant
                     ) {
                         Column(
                             modifier = Modifier.padding(12.dp),
@@ -231,7 +240,7 @@ private fun RegisterContent(
                 AnimatedVisibility(visible = state.passwordError != null) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFFFEF2F2),
+                        color = cs.errorContainer,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp)
@@ -239,7 +248,7 @@ private fun RegisterContent(
                         Text(
                             state.passwordError ?: "",
                             fontSize = 13.sp,
-                            color = Color(0xFFB91C1C),
+                            color = cs.error,
                             modifier = Modifier.padding(12.dp)
                         )
                     }
@@ -247,7 +256,7 @@ private fun RegisterContent(
 
                 Spacer(Modifier.height(24.dp))
 
-                // Submit — purple bg matching web
+                // Submit
                 KButton(
                     text = stringResource(R.string.register_button),
                     onClick = onRegister,
@@ -257,25 +266,25 @@ private fun RegisterContent(
 
                 Spacer(Modifier.height(16.dp))
 
-                // "Étape suivante" info box — matches web purple info card
+                // "Étape suivante" info box — uses primary-tinted surface
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFEDE9FE).copy(alpha = 0.6f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFDDD6FE))
+                    color = cs.primaryContainer.copy(alpha = 0.6f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, cs.primary.copy(alpha = 0.25f))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = stringResource(R.string.register_next_step_title),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF7C3AED)
+                            color = cs.primary
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = stringResource(R.string.register_next_step_body),
                             fontSize = 13.sp,
-                            color = Color(0xFF374151)
+                            color = cs.onSurfaceVariant
                         )
                     }
                 }
@@ -286,6 +295,7 @@ private fun RegisterContent(
 
 @Composable
 private fun PasswordCriterionRow(label: String, met: Boolean) {
+    val cs = MaterialTheme.colorScheme
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -294,12 +304,12 @@ private fun PasswordCriterionRow(label: String, met: Boolean) {
             imageVector = if (met) Icons.Default.Check else Icons.Default.Circle,
             contentDescription = null,
             modifier = Modifier.size(16.dp),
-            tint = if (met) Color(0xFF22C55E) else Color(0xFFD1D5DB)
+            tint = if (met) SuccessGreen else cs.outline
         )
         Text(
             text = label,
             fontSize = 13.sp,
-            color = if (met) Color(0xFF15803D) else Color(0xFF6B7280)
+            color = if (met) SuccessGreenText else cs.onSurfaceVariant
         )
     }
 }

@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -60,15 +59,16 @@ private fun LoginContent(
     onNavigateToForgotPassword: () -> Unit = {}
 ) {
     var rememberMe by remember { mutableStateOf(false) }
+    val cs = MaterialTheme.colorScheme
 
-    // Full-screen purple-tinted background matching #f4f4f6
+    // Full-screen background follows theme (light/dark)
     Box(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars),
         contentAlignment = Alignment.Center
     ) {
-        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFf4f4f6)) {}
+        Surface(modifier = Modifier.fillMaxSize(), color = cs.background) {}
 
         Column(
             modifier = Modifier
@@ -77,22 +77,22 @@ private fun LoginContent(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // White card — rounded-2xl border border-gray-100 bg-white p-8 shadow-sm
+            // Card — surface color follows theme
             AuthCard {
 
-                // Lock icon in purple rounded square
+                // Lock icon in primary-tinted rounded square
                 Box(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     contentAlignment = Alignment.Center
                 ) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFFEDE9FE)
+                        color = cs.primaryContainer
                     ) {
                         Icon(
                             imageVector = Icons.Default.Lock,
                             contentDescription = null,
-                            tint = Color(0xFF7C3AED),
+                            tint = cs.onPrimaryContainer,
                             modifier = Modifier
                                 .padding(12.dp)
                                 .size(24.dp)
@@ -107,7 +107,7 @@ private fun LoginContent(
                     text = stringResource(R.string.login_title),
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF111827),
+                    color = cs.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -117,7 +117,7 @@ private fun LoginContent(
                 // Subtitle with register link
                 val subtitle = buildAnnotatedString {
                     append(stringResource(R.string.login_subtitle_prefix))
-                    withStyle(SpanStyle(color = Color(0xFF7C3AED), fontWeight = FontWeight.SemiBold)) {
+                    withStyle(SpanStyle(color = cs.primary, fontWeight = FontWeight.SemiBold)) {
                         append(stringResource(R.string.login_subtitle_link))
                     }
                 }
@@ -126,7 +126,7 @@ private fun LoginContent(
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
-                    Text(subtitle, fontSize = 14.sp, color = Color(0xFF6B7280))
+                    Text(subtitle, fontSize = 14.sp, color = cs.onSurfaceVariant)
                 }
 
                 Spacer(Modifier.height(24.dp))
@@ -135,13 +135,13 @@ private fun LoginContent(
                 AnimatedVisibility(visible = state.emailError != null || state.passwordError != null) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFFFEF2F2),
+                        color = cs.errorContainer,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = state.emailError ?: state.passwordError ?: "",
                             fontSize = 13.sp,
-                            color = Color(0xFFB91C1C),
+                            color = cs.error,
                             modifier = Modifier.padding(12.dp)
                         )
                     }
@@ -161,7 +161,7 @@ private fun LoginContent(
                 if (state.emailError != null) {
                     Text(
                         text = state.emailError,
-                        color = Color(0xFFDC2626),
+                        color = cs.error,
                         fontSize = 11.sp,
                         modifier = Modifier
                             .align(Alignment.Start)
@@ -197,14 +197,14 @@ private fun LoginContent(
                             onCheckedChange = { rememberMe = it },
                             enabled = !state.isLoading,
                             colors = CheckboxDefaults.colors(
-                                checkedColor = Color(0xFF7C3AED),
-                                checkmarkColor = Color.White
+                                checkedColor = cs.primary,
+                                checkmarkColor = cs.onPrimary
                             )
                         )
                         Text(
                             text = stringResource(R.string.login_remember_me),
                             fontSize = 13.sp,
-                            color = Color(0xFF374151)
+                            color = cs.onSurfaceVariant
                         )
                     }
                     TextButton(
@@ -214,7 +214,7 @@ private fun LoginContent(
                         Text(
                             text = stringResource(R.string.login_forgot_password),
                             fontSize = 13.sp,
-                            color = Color(0xFF7C3AED),
+                            color = cs.primary,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -222,7 +222,7 @@ private fun LoginContent(
 
                 Spacer(Modifier.height(20.dp))
 
-                // Submit button — dark background like web (bg-gray-900)
+                // Submit button
                 KButton(
                     text = stringResource(R.string.login_button),
                     onClick = onLogin,
