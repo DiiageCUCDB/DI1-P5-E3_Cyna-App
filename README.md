@@ -1,4 +1,4 @@
-# Documentation Cyna Android — Index
+# Documentation Cyna Android — Index 
 
 > Documentation technique complète de l'application Android Cyna.  
 > Architecture : Clean Architecture · MVI · Jetpack Compose · Ktor · Koin
